@@ -18,6 +18,8 @@ if(WIN32)
     add_definitions("-D_WIN32_WINNT=0x0601")
     add_definitions("-DLOCALE_NOT_USED")
     add_definitions("-DSOCKLEN_T=int")
+    add_definitions("-D_CRT_SECURE_NO_WARNINGS")
+    add_definitions("-D_WINSOCK_DEPRECATED_NO_WARNINGS")
 else()
     add_definitions("-DBSD=1")
     add_definitions("-DSOCKLEN_T=socklen_t")
@@ -26,16 +28,16 @@ endif()
 if(MSVC)
     # Turn of all warnings
     if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-        string(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        string(REGEX REPLACE "/W[0-4]" "/W3" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     else()
-        add_compile_options("/W0")
+        add_compile_options("/W3")
     endif()
 elseif((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR
        (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
     # Generate JSON Compilation Database
     set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
     # Turn of all warnings
-    add_compile_options("-w")
+    add_compile_options("-Wall")
 endif()
 
 set(LIVE555_FILES
