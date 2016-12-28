@@ -15,7 +15,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 if(WIN32)
     add_definitions("-DNOMINMAX")
-    add_definitions("-D_WIN32_WINNT=0x0501")
+    add_definitions("-D_WIN32_WINNT=0x0601")
     add_definitions("-DLOCALE_NOT_USED")
     add_definitions("-DSOCKLEN_T=int")
 else()
@@ -409,6 +409,25 @@ set(LIVE555_FILES
     liveMedia/include/uLawAudioFilter.hh
 )
 
+option(EPOLL_SUPPORT ON)
+if(EPOLL_SUPPORT)
+    set(LIVE555_FILES ${LIVE555_FILES}
+        EpollTaskScheduler/EpollTaskScheduler.cpp
+        EpollTaskScheduler/include/EpollTaskScheduler.hh
+    )
+
+    if(WIN32)
+        set(LIVE555_FILES ${LIVE555_FILES}
+            EpollTaskScheduler/epoll.c
+            EpollTaskScheduler/include/epoll.h
+            EpollTaskScheduler/include/msafd.h
+            EpollTaskScheduler/include/ntapi.h
+            EpollTaskScheduler/include/tree.h
+        )
+    endif()
+    add_definitions("-DHAVE_EPOLL")
+endif()
+
 add_library(live555 STATIC ${LIVE555_FILES})
 if(WIN32)
     target_link_libraries(live555 ws2_32 mswsock)
@@ -419,6 +438,10 @@ target_include_directories(live555 PUBLIC
     groupsock/include
     liveMedia/include
     UsageEnvironment/include)
+
+if(EPOLL_SUPPORT)
+    target_include_directories(live555 PUBLIC EpollTaskScheduler/include)
+endif()
 
 option(BUILD_EXAMPLES OFF)
 if(BUILD_EXAMPLES)
