@@ -19,7 +19,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 #include "EpollTaskScheduler.hh"
 #if defined(__WIN32__) || defined(_WIN32)
-#include <epoll.h>
+#include "epoll.h"
 #define EPOLL_INVALID NULL
 #else
 #include <sys/epoll.h>
