@@ -1,4 +1,93 @@
-Next version, in progress:
+2016.11.28:
+- Our "RTSPClient" code now ignores "Connection: close" lines in the responses to HTTP "GET"
+  requests (that are used to set up RTSP-over-HTTP tunneling).  Because this tunneling
+  requires that the (separate) input and output TCP connections remain intact, we assume that
+  the server - if it includes such a line in the response to a HTTP "GET" - doesn't really
+  mean it.
+  (Thanks to Nguyen Viet Hung for reporting a server that does this.)
+
+2016.11.17:
+- Fixed a bug in the handling of 'APP' RTCP subpackets.  (Thanks to Frederik de Ruyck for reporting this.)
+- Fixed a bug in the "StreamReplicator" code.  (Thanks to Bruno Abreu for reporting this.)
+
+2016.11.06:
+- Increase the RTSP client's socket receive buffer when we'll be receiving RTP/RTCP-over-TCP,
+  and increase the RTSP server's client connection socket send buffer when it's used to
+  "REGISTER" a stream.
+
+2016.11.03:
+- Fixed a bug (in the sending/ handling of the "REGISTER"/"DEREGISTER" commands) that had been
+  accidentally introduced in version 2016.09.19.  (Thanks to Ralf Globisch for noting this.)
+
+2016.10.29:
+- Performed the annual update of the copyright years and license near the start of each file
+
+2016.10.21:
+- Changed the "RTCPInstance error" message in "RTCP.cpp" to make it clear that the problem is
+  caused by the remote endpoint using a buggy version of RTP/RTCP-over-TCP streaming.
+- Updated "QuickTimeFileSink" to make the various creation/modification times relative to
+  January 1st 1904 in UTC (as Apple recommends), rather than in US Pacific Time.
+
+2016.10.11:
+- After building the source code, we now display a message reminding the developer about our FAQ.
+
+2016.09.22:
+- Added a new "liveMedia" class "MPEG2TransportStreamAccumulator" - a filter that can be used
+  to combine several (by default, 7) MPEG Transport Stream 188-byte 'packets' into a larger
+  chunk of data, more appropriate for streaming via RTP (or raw UDP).
+
+2016.09.19:
+- Added support for an experimental RTSP "DEREGISTER" command, which undoes the effect of
+  a "REGISTER" command.
+- Moved the REGISTER/DEREGISTER-specific functionality of "RTSPServer.cpp" into a new file
+  "RTSPServerRegister.cpp", to make the base RTSP server code (in "RTSPServer.cpp") easier to
+  comprehend.
+
+2016.09.12:
+- Fixed "GenericMediaServer::createNewClientSessionWithId()" to make sure that the new
+  'client session' object (returned by a call to "createNewClientSession()") is not NULL
+  before it tries to add it to the 'fClientSessions' table.
+  (Thanks to Helmut Grohne for discovering this issue.)
+
+2016.09.08:
+- Updated "RTSPClient::reset()" to reset each of the 'request queues' as well.
+  (Thanks to Erik Montnemery for noting a problem (with the "LIVE555 Proxy Server") that this caused.)
+- Updated "GenericMediaServer::ClientConnection::closeSockets()" so that it doesn't try to call
+  "closeSocket()" (=="close()") on socket numbers <0.
+
+2016.09.05:
+- Fixed a problem whereby a 'delayed task' for a "MPEG2TransportStreamMultiplexor" object might
+  have gotten run after such an object was deleted.
+  (Thanks to Bruno Basilio for providing debugging output to help track this down.)
+- Updated "Socket::reset()" (in "groupsock/NetInterface.cpp") so that it doesn't try to call
+  "closeSocket()" (=="close()") on socket numbers <0.
+- Added a comment to "UsageEnvironment/include/UsageEnvironment.hh" to note that "triggerEvent()"
+  should not be called with the same 'event trigger id' from different threads.
+  (This was already noted in a comment in "liveMedia/DeviceSource.cpp", but not in
+   "UsageEnvironment/include/UsageEnvironment.hh", which is where "triggerEvent()" is defined.)
+
+2016.08.27:
+- Fixed a problem whereby a "Medium" object's "nextTask()" (i.e., "fNextTask") could hold
+  an invalid value after a 'scheduled task' has occurred (but before the next similar task
+  is scheduled) - which causes problems should the "Medium" object be deleted during that
+  window of time.  (Thanks to Helmut Grohne for noting this problem.)
+- Added comments to "UsageEnvironment/include/UsageEnvironment.hh" to make it clear that
+  "unscheduleDelayedTask()" (or "rescheduleDelayedTask()") must not be called on a
+  'scheduled task' after it has already occurred.
+  (Thanks to Helmut Grohne for motivating this.)  
+
+2016.08.07:
+- Fixed a bug in the handling of the non-standard "com.ses.streamID:" header (used by
+  'SAT>IP' servers) that we had introduced in version 2016.01.12.
+  (Thanks to Yaobing Deng for noting this.)
+
+2016.07.19:
+- Fixed a bug in "RTSPServer" that could cause a crash if a "RTSPServer" object is deleted after
+  having been used for RTSP-over-HTTP streaming.  (Thanks to Pavel Aronov.)
+- Updated "RTSPClient" to recognize a "Connection: Close" header in a server's response.
+  It handles this header by closing the RTSP TCP connection (because the server is assumed to
+  not be using it again), so that we open a new TCP connection for any subsequent commands.
+  (Thanks to Nathan (at MediaPortal) for this suggestion.)
 - Made a small optimization to "RTSPServer"s handling of the first "SETUP" command from
   each client.  (Thanks to Maxim Dementiev for the suggestion.)
 
@@ -128,7 +217,7 @@ Next version, in progress:
 2016.01.16:
 - This release has no source-code changes from the previous release.  However, a test file was
   mistakenly left in the previous version; this produced an excessively-large tar file.
-  This has now been removed.            
+  This has now been removed.          
 
 2016.01.12:
 - Added a hack to "RTSPClient" to handle the non-standard "com.ses.streamID:" header - used by
@@ -1256,11 +1345,11 @@ Next version, in progress:
   the public Internet.
   To send a "REGISTER" request (for an existing stream, described by a "ServerMediaSession" object that was added to a "RTSPServer"
       object), call the new member function
-       "RTSPServer::registerStream()"
+     "RTSPServer::registerStream()"
       specifying the remote client (or proxy server)'s name or IP address, and port number.
   To create a simple server that accepts incoming "REGISTER" (or "REGISTER_REMOTE") requests, and then creates a new "RTSPClient"
       object to handle the "rtsp://" URL specified by each such incoming request, create a
-     "HandlerServerForREGISTERCommand"
+   "HandlerServerForREGISTERCommand"
       object, by calling "HandlerServerForREGISTERCommand::createNew()" (see "liveMedia/include/RTSPClient.hh").
       (For an illustration of this, note how we implement the new '-R' command-line option for the "openRTSP" application.)
   To create a proxy server that automatically accepts incoming "REGISTER" (or "REGISTER_REMOTE") requests, and proxies the
@@ -1740,12 +1829,12 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
     - To automatically have your streams advertised (in their SDP description) as supporting absolute time indexing,
       reimplement (in your subclass) the virtual function:
         "virtual void getAbsoluteTimeRange(char*& absStartTime, char*& absEndTime) const;"
-      (see "liveMedia/include/ServerMediaSession.hh").
+    (see "liveMedia/include/ServerMediaSession.hh").
       This function should set "absStartTime" to a string value (of the form noted above), and should set "absEndTime" to
       a corresponding string value, if the stream has an end time, otherwise NULL.
     - To implement seeking by absolute time, reimplement (in your subclass) the virtual function:
         "virtual void seekStreamSource(FramedSource* inputSource, char*& absStart, char*& absEnd);"
-      (see "liveMedia/include/OnDemandServerMediaSubsession.hh").
+    (see "liveMedia/include/OnDemandServerMediaSubsession.hh").
       "absStart" (and "absEnd", if non-NULL) are strings (of the form noted above).
       (The function *may* change them, to make them more accurate.)      
   - For RTSP client developers:
@@ -2690,7 +2779,7 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
 2010.01.22:
 - Changed the implementation of "Socket::changePort()" once again, beause it was reported that the change made in version
   2010.01.15 didn't work.  Note, however, that this change also introduces a new function
-         virtual void moveSocketHandling(int oldSocketNum, int newSocketNum) = 0;
+       virtual void moveSocketHandling(int oldSocketNum, int newSocketNum) = 0;
   to the "TaskScheduler" API.  We have implemented this for "BasicTaskScheduler".  If you implement your own subclass of
   "TaskScheduler", then you will need to implement this new function as well.
 
@@ -3008,8 +3097,8 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
 
 2007.11.01:
 - Several of the options to "openRTSP" have now been changed, with two new options added:
-      -s <initial-seek-time>
-      -z <scale>
+    -s <initial-seek-time>
+    -z <scale>
   See the "openRTSP" documentation <http://www.live555.com/openRTSP/> for details.
 - Fixed a bug in the way that "MPEG4VideoStreamDiscreteFramer" parses 'config' information (for inclusion in
   the stream's SDP description).  (Thanks to Nicola Bova for helping to identify this bug.)
@@ -5216,7 +5305,7 @@ synchronized.
 
 2002.10.21:
 Changed the top-level Unix Makefile to do
-    make --directory=<dir>
+  make --directory=<dir>
 rather than
        cd <dir>; make
 as the latter apparently didn't work with cygwin.
