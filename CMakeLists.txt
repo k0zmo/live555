@@ -426,7 +426,7 @@ if(EPOLL_SUPPORT)
     add_definitions("-DHAVE_EPOLL")
 endif()
 
-add_library(live555 STATIC ${LIVE555_FILES})
+add_library(live555 ${LIVE555_FILES})
 if(WIN32)
     target_link_libraries(live555 ws2_32 mswsock)
 endif()
