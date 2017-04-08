@@ -24,7 +24,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 #include "playCommon.hh"
 #include "BasicUsageEnvironment.hh"
 #include "GroupsockHelper.hh"
-#if defined(HAVE_EPOLL)
+#if defined(HAVE_EPOLL_SCHEDULER)
 #include "EpollTaskScheduler.hh"
 #endif
 
@@ -151,7 +151,7 @@ void usage() {
 
 int main(int argc, char** argv) {
   // Begin by setting up our usage environment:
-#if defined(HAVE_EPOLL)
+#if defined(HAVE_EPOLL_SCHEDULER)
   TaskScheduler* scheduler = EpollTaskScheduler::createNew();
 #else
   TaskScheduler* scheduler = BasicTaskScheduler::createNew();
