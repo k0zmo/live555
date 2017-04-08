@@ -426,6 +426,38 @@ add_library(liveMedia
 target_include_directories(liveMedia PUBLIC liveMedia/include)
 target_link_libraries(liveMedia PUBLIC UsageEnvironment)
 
+set(groupsock_VERSION_CURRENT 9)
+set(groupsock_VERSION_REVISION 1)
+set(groupsock_VERSION_AGE 1)
+math(EXPR groupsock_VERSION_MAJOR "${groupsock_VERSION_CURRENT} - ${groupsock_VERSION_AGE}")
+set_target_properties(groupsock PROPERTIES 
+                      VERSION ${groupsock_VERSION_MAJOR}.${groupsock_VERSION_AGE}.${groupsock_VERSION_REVISION}
+                      SOVERSION ${groupsock_VERSION_MAJOR})
+
+set(UsageEnvironment_VERSION_CURRENT 4)
+set(UsageEnvironment_VERSION_REVISION 0)
+set(UsageEnvironment_VERSION_AGE 1)
+math(EXPR UsageEnvironment_VERSION_MAJOR "${UsageEnvironment_VERSION_CURRENT} - ${UsageEnvironment_VERSION_AGE}")
+set_target_properties(UsageEnvironment PROPERTIES 
+                      VERSION ${UsageEnvironment_VERSION_MAJOR}.${UsageEnvironment_VERSION_AGE}.${UsageEnvironment_VERSION_REVISION}
+                      SOVERSION ${UsageEnvironment_VERSION_MAJOR})
+
+set(BasicUsageEnvironment_VERSION_CURRENT 1)
+set(BasicUsageEnvironment_VERSION_REVISION 0)
+set(BasicUsageEnvironment_VERSION_AGE 0)
+math(EXPR BasicUsageEnvironment_VERSION_MAJOR "${BasicUsageEnvironment_VERSION_CURRENT} - ${BasicUsageEnvironment_VERSION_AGE}")
+set_target_properties(BasicUsageEnvironment PROPERTIES 
+                      VERSION ${BasicUsageEnvironment_VERSION_MAJOR}.${BasicUsageEnvironment_VERSION_AGE}.${BasicUsageEnvironment_VERSION_REVISION}
+                      SOVERSION ${BasicUsageEnvironment_VERSION_MAJOR})
+
+set(liveMedia_VERSION_CURRENT 57)
+set(liveMedia_VERSION_REVISION 5)
+set(liveMedia_VERSION_AGE 0)
+math(EXPR liveMedia_VERSION_MAJOR "${liveMedia_VERSION_CURRENT} - ${liveMedia_VERSION_AGE}")
+set_target_properties(liveMedia PROPERTIES 
+                      VERSION ${liveMedia_VERSION_MAJOR}.${liveMedia_VERSION_AGE}.${liveMedia_VERSION_REVISION}
+                      SOVERSION ${liveMedia_VERSION_MAJOR})
+
 option(EPOLL_SUPPORT ON)
 if(EPOLL_SUPPORT)
     set(EPOLL_TASK_SCHEDULER_FILES
@@ -444,6 +476,14 @@ if(EPOLL_SUPPORT)
     target_include_directories(EpollTaskScheduler PUBLIC EpollTaskScheduler/include)
     target_link_libraries(EpollTaskScheduler PUBLIC BasicUsageEnvironment)
     target_compile_definitions(EpollTaskScheduler PUBLIC "-DHAVE_EPOLL_SCHEDULER")
+
+    set(EpollTaskScheduler_VERSION_CURRENT 1)
+    set(EpollTaskScheduler_VERSION_REVISION 0)
+    set(EpollTaskScheduler_VERSION_AGE 0)
+    math(EXPR EpollTaskScheduler_VERSION_MAJOR "${EpollTaskScheduler_VERSION_CURRENT} - ${EpollTaskScheduler_VERSION_AGE}")
+    set_target_properties(EpollTaskScheduler PROPERTIES 
+                          VERSION ${EpollTaskScheduler_VERSION_MAJOR}.${EpollTaskScheduler_VERSION_AGE}.${EpollTaskScheduler_VERSION_REVISION}
+                          SOVERSION ${EpollTaskScheduler_VERSION_MAJOR})
 endif()
 
 option(BUILD_EXAMPLES OFF)
