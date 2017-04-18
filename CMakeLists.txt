@@ -1,38 +1,25 @@
 cmake_minimum_required(VERSION 3.1.2)
 project(live555)
 
-# Default to Release build if non provided
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "Setting build type to 'Release' as none was specified.")
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
-                 "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-endif()
-
-if(WIN32)
-    add_definitions("-DNOMINMAX")
-    add_definitions("-D_WIN32_WINNT=0x0601")
-    add_definitions("-DLOCALE_NOT_USED")
-    add_definitions("-DSOCKLEN_T=int")
-    add_definitions("-D_CRT_SECURE_NO_WARNINGS")
-    add_definitions("-D_WINSOCK_DEPRECATED_NO_WARNINGS")
-else()
-    add_definitions("-DBSD=1")
-    add_definitions("-DSOCKLEN_T=socklen_t")
-endif()
-
-if(MSVC)
-    # Turn of all warnings
-    if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-        string(REGEX REPLACE "/W[0-4]" "/W3" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+function(target_live555_compile_options _target)
+    if(WIN32)
+        target_compile_definitions(${_target} PUBLIC -DNOMINMAX
+                                                     -D_WIN32_WINNT=0x0601
+                                                     -DLOCALE_NOT_USED
+                                                     -DSOCKLEN_T=int)
     else()
-        add_compile_options("/W3")
+        target_compile_definitions(${_target} PUBLIC -DBSD=1
+                                                     -DSOCKLEN_T=socklen_t)
     endif()
-elseif((CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR
-       (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
-    # Turn of all warnings
-    add_compile_options("-Wall")
-endif()
+
+    if(MSVC)
+        target_compile_options(${_target} PRIVATE /W3)
+        target_compile_definitions(${_target} PRIVATE -D_CRT_SECURE_NO_WARNINGS
+                                                      -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+    else()
+        target_compile_options(${_target} PRIVATE -Wall)
+    endif()
+endfunction()
 
 add_library(groupsock 
             groupsock/GroupEId.cpp
@@ -51,6 +38,7 @@ add_library(groupsock
             groupsock/include/NetInterface.hh
             groupsock/include/TunnelEncaps.hh
             groupsock/include/groupsock_version.hh)
+target_live555_compile_options(groupsock)
 target_include_directories(groupsock PUBLIC groupsock/include)
 # This is a cyclic dependency :(
 target_include_directories(groupsock PUBLIC UsageEnvironment/include)
@@ -67,6 +55,7 @@ add_library(UsageEnvironment
             UsageEnvironment/include/UsageEnvironment.hh
             UsageEnvironment/include/UsageEnvironment_version.hh
             UsageEnvironment/include/strDup.hh)
+target_live555_compile_options(UsageEnvironment)
 target_include_directories(UsageEnvironment PUBLIC UsageEnvironment/include)
 target_link_libraries(UsageEnvironment PUBLIC groupsock)
 
@@ -83,6 +72,7 @@ add_library(BasicUsageEnvironment
             BasicUsageEnvironment/include/BasicUsageEnvironment_version.hh
             BasicUsageEnvironment/include/DelayQueue.hh
             BasicUsageEnvironment/include/HandlerSet.hh)
+target_live555_compile_options(BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment PUBLIC BasicUsageEnvironment/include)
 target_link_libraries(BasicUsageEnvironment PUBLIC UsageEnvironment)
 
@@ -423,6 +413,7 @@ add_library(liveMedia
             liveMedia/include/ourMD5.hh
             liveMedia/include/uLawAudioFilter.hh
 )
+target_live555_compile_options(liveMedia)
 target_include_directories(liveMedia PUBLIC liveMedia/include)
 target_link_libraries(liveMedia PUBLIC UsageEnvironment)
 
@@ -458,8 +449,8 @@ set_target_properties(liveMedia PROPERTIES
                       VERSION ${liveMedia_VERSION_MAJOR}.${liveMedia_VERSION_AGE}.${liveMedia_VERSION_REVISION}
                       SOVERSION ${liveMedia_VERSION_MAJOR})
 
-option(EPOLL_SUPPORT ON)
-if(EPOLL_SUPPORT)
+option(LIVE555_EPOLL_SUPPORT ON)
+if(LIVE555_EPOLL_SUPPORT)
     set(EPOLL_TASK_SCHEDULER_FILES
         EpollTaskScheduler/EpollTaskScheduler.cpp
         EpollTaskScheduler/include/EpollTaskScheduler.hh)
@@ -473,6 +464,7 @@ if(EPOLL_SUPPORT)
             EpollTaskScheduler/include/tree.h)
     endif()
     add_library(EpollTaskScheduler ${EPOLL_TASK_SCHEDULER_FILES})
+    target_live555_compile_options(EpollTaskScheduler)
     target_include_directories(EpollTaskScheduler PUBLIC EpollTaskScheduler/include)
     target_link_libraries(EpollTaskScheduler PUBLIC BasicUsageEnvironment)
     target_compile_definitions(EpollTaskScheduler PUBLIC "-DHAVE_EPOLL_SCHEDULER")
@@ -486,40 +478,34 @@ if(EPOLL_SUPPORT)
                           SOVERSION ${EpollTaskScheduler_VERSION_MAJOR})
 endif()
 
-option(BUILD_EXAMPLES OFF)
-if(BUILD_EXAMPLES)
-    set(LIVE555_LIBRARIES liveMedia BasicUsageEnvironment)
-    if(EPOLL_SUPPORT)
-        set(LIVE555_LIBRARIES ${LIVE555_LIBRARIES} EpollTaskScheduler)
-    endif()
+option(LIVE555_BUILD_EXAMPLES OFF)
+if(LIVE555_BUILD_EXAMPLES)
+    macro(add_test_executable _target)
+        add_executable(${_target} ${ARGN})
+        target_live555_compile_options(${_target})
+        target_link_libraries(${_target} liveMedia BasicUsageEnvironment
+            $<$<BOOL:LIVE555_EPOLL_SUPPORT>:EpollTaskScheduler>)
+    endmacro()
+
     # test...
-    add_executable(testRTSPClient testProgs/testRTSPClient.cpp)
-    target_link_libraries(testRTSPClient ${LIVE555_LIBRARIES})
-
-    add_executable(testH264VideoStreamer testProgs/testH264VideoStreamer.cpp)
-    target_link_libraries(testH264VideoStreamer ${LIVE555_LIBRARIES})
-
-    add_executable(testOnDemandRTSPServer testProgs/testOnDemandRTSPServer.cpp)
-    target_link_libraries(testOnDemandRTSPServer ${LIVE555_LIBRARIES})
+    add_test_executable(testRTSPClient testProgs/testRTSPClient.cpp)
+    add_test_executable(testH264VideoStreamer testProgs/testH264VideoStreamer.cpp)
+    add_test_executable(testOnDemandRTSPServer testProgs/testOnDemandRTSPServer.cpp)
+    # TODO: add more from testProgs/
 
     # openRTSP
-    add_executable(openRTSP
-        testProgs/openRTSP.cpp
-        testProgs/playCommon.cpp
-        testProgs/playCommon.hh
-    )
-    target_link_libraries(openRTSP ${LIVE555_LIBRARIES})
+    add_test_executable(openRTSP
+                        testProgs/openRTSP.cpp
+                        testProgs/playCommon.cpp
+                        testProgs/playCommon.hh)
 
     # Proxy server
-    add_executable(live555ProxyServer proxyServer/live555ProxyServer.cpp)
-    target_link_libraries(live555ProxyServer ${LIVE555_LIBRARIES})
+    add_test_executable(live555ProxyServer proxyServer/live555ProxyServer.cpp)
 
     # Media server
-    add_executable(live555MediaServer
-        mediaServer/DynamicRTSPServer.cpp
-        mediaServer/DynamicRTSPServer.hh
-        mediaServer/live555MediaServer.cpp
-        mediaServer/version.hh
-    )
-    target_link_libraries(live555MediaServer ${LIVE555_LIBRARIES})
+    add_test_executable(live555MediaServer
+                        mediaServer/DynamicRTSPServer.cpp
+                        mediaServer/DynamicRTSPServer.hh
+                        mediaServer/live555MediaServer.cpp
+                        mediaServer/version.hh)
 endif()
