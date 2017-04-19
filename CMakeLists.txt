@@ -458,10 +458,10 @@ if(LIVE555_EPOLL_SUPPORT)
     if(WIN32)
         set(EPOLL_TASK_SCHEDULER_FILES ${EPOLL_TASK_SCHEDULER_FILES}
             EpollTaskScheduler/epoll.c
-            EpollTaskScheduler/include/epoll.h
-            EpollTaskScheduler/include/msafd.h
-            EpollTaskScheduler/include/ntapi.h
-            EpollTaskScheduler/include/tree.h)
+            EpollTaskScheduler/epoll.h
+            EpollTaskScheduler/msafd.h
+            EpollTaskScheduler/ntapi.h
+            EpollTaskScheduler/tree.h)
     endif()
     add_library(EpollTaskScheduler ${EPOLL_TASK_SCHEDULER_FILES})
     target_live555_compile_options(EpollTaskScheduler)
