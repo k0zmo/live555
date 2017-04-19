@@ -467,7 +467,6 @@ if(LIVE555_EPOLL_SUPPORT)
     target_live555_compile_options(EpollTaskScheduler)
     target_include_directories(EpollTaskScheduler PUBLIC EpollTaskScheduler/include)
     target_link_libraries(EpollTaskScheduler PUBLIC BasicUsageEnvironment)
-    target_compile_definitions(EpollTaskScheduler PUBLIC "-DHAVE_EPOLL_SCHEDULER")
 
     set(EpollTaskScheduler_VERSION_CURRENT 1)
     set(EpollTaskScheduler_VERSION_REVISION 0)
@@ -483,8 +482,11 @@ if(LIVE555_BUILD_EXAMPLES)
     macro(add_test_executable _target)
         add_executable(${_target} ${ARGN})
         target_live555_compile_options(${_target})
-        target_link_libraries(${_target} liveMedia BasicUsageEnvironment
-            $<$<BOOL:LIVE555_EPOLL_SUPPORT>:EpollTaskScheduler>)
+        target_link_libraries(${_target} liveMedia BasicUsageEnvironment)
+        if(LIVE555_EPOLL_SUPPORT)
+            target_link_libraries(${_target} EpollTaskScheduler)
+            target_compile_definitions(${_target} PRIVATE -DHAVE_EPOLL_SCHEDULER)
+        endif()
     endmacro()
 
     # test...
