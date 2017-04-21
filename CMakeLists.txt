@@ -3,19 +3,19 @@ project(live555)
 
 function(target_live555_compile_options _target)
     if(WIN32)
-        target_compile_definitions(${_target} PUBLIC -DNOMINMAX
-                                                     -D_WIN32_WINNT=0x0601
-                                                     -DLOCALE_NOT_USED
-                                                     -DSOCKLEN_T=int)
+        target_compile_definitions(${_target} PUBLIC NOMINMAX
+                                                     _WIN32_WINNT=0x0601
+                                                     LOCALE_NOT_USED
+                                                     SOCKLEN_T=int)
     else()
-        target_compile_definitions(${_target} PUBLIC -DBSD=1
-                                                     -DSOCKLEN_T=socklen_t)
+        target_compile_definitions(${_target} PUBLIC BSD=1
+                                                     SOCKLEN_T=socklen_t)
     endif()
 
     if(MSVC)
         target_compile_options(${_target} PRIVATE /W3)
-        target_compile_definitions(${_target} PRIVATE -D_CRT_SECURE_NO_WARNINGS
-                                                      -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+        target_compile_definitions(${_target} PRIVATE _CRT_SECURE_NO_WARNINGS
+                                                      _WINSOCK_DEPRECATED_NO_WARNINGS)
     else()
         target_compile_options(${_target} PRIVATE -Wall)
     endif()
@@ -485,7 +485,7 @@ if(LIVE555_BUILD_EXAMPLES)
         target_link_libraries(${_target} liveMedia BasicUsageEnvironment)
         if(LIVE555_EPOLL_SUPPORT)
             target_link_libraries(${_target} EpollTaskScheduler)
-            target_compile_definitions(${_target} PRIVATE -DHAVE_EPOLL_SCHEDULER)
+            target_compile_definitions(${_target} PRIVATE HAVE_EPOLL_SCHEDULER)
         endif()
     endmacro()
 
