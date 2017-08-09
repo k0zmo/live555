@@ -338,6 +338,9 @@ add_library(liveMedia
 target_live555_compile_options(liveMedia)
 target_include_directories(liveMedia PUBLIC include)
 target_link_libraries(liveMedia PUBLIC groupsock UsageEnvironment)
+if(LIVE555_EPOLL_SUPPORT)
+    target_compile_definitions(liveMedia PUBLIC READ_FROM_FILES_SYNCHRONOUSLY)
+endif()
 
 set(liveMedia_VERSION_CURRENT 57)
 set(liveMedia_VERSION_REVISION 5)
