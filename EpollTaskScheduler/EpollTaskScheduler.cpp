@@ -92,7 +92,9 @@ void EpollTaskScheduler::SingleStep(unsigned maxDelayTime) {
   epoll_event event;
   int ret = epoll_wait(fEpollHandle, &event, 1, timeout);
   if (ret < 0) {
-    internalError();
+    if (errno != EINTR) {
+      internalError();
+    }
   }
 
   if (ret > 0) {
