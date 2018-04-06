@@ -16,7 +16,7 @@ target_include_directories(BasicUsageEnvironment PUBLIC include)
 target_link_libraries(BasicUsageEnvironment PUBLIC UsageEnvironment)
 
 set(BasicUsageEnvironment_VERSION_CURRENT 1)
-set(BasicUsageEnvironment_VERSION_REVISION 0)
+set(BasicUsageEnvironment_VERSION_REVISION 1)
 set(BasicUsageEnvironment_VERSION_AGE 0)
 math(EXPR BasicUsageEnvironment_VERSION_MAJOR "${BasicUsageEnvironment_VERSION_CURRENT} - ${BasicUsageEnvironment_VERSION_AGE}")
 set_target_properties(BasicUsageEnvironment PROPERTIES 

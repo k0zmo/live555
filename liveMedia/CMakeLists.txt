@@ -342,8 +342,8 @@ if(LIVE555_EPOLL_SUPPORT)
     target_compile_definitions(liveMedia PUBLIC READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
 
-set(liveMedia_VERSION_CURRENT 57)
-set(liveMedia_VERSION_REVISION 5)
+set(liveMedia_VERSION_CURRENT 62)
+set(liveMedia_VERSION_REVISION 2)
 set(liveMedia_VERSION_AGE 0)
 math(EXPR liveMedia_VERSION_MAJOR "${liveMedia_VERSION_CURRENT} - ${liveMedia_VERSION_AGE}")
 set_target_properties(liveMedia PROPERTIES 
