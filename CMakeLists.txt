@@ -1,14 +1,14 @@
-cmake_minimum_required(VERSION 3.1.2)
-project(live555 LANGUAGES C CXX)
+cmake_minimum_required(VERSION 3.9)
+project(live555 
+    LANGUAGES C CXX 
+    VERSION 2018.02.18
+)
 
-set(LIVE555_SOURCE_DIR ${live555_SOURCE_DIR})
-set(LIVE555_CMAKE_MODULE_PATH ${LIVE555_SOURCE_DIR}/cmake)
-set(CMAKE_MODULE_PATH ${LIVE555_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
+include(live555)
 
 option(LIVE555_EPOLL_SUPPORT "Enable epoll task scheduler (Windows also)" ON)
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
-
-include(live555)
 
 add_subdirectory(UsageEnvironment)
 add_subdirectory(groupsock)
@@ -25,5 +25,20 @@ if(LIVE555_BUILD_EXAMPLES)
     add_subdirectory(mediaServer)
 endif()
 
-message(STATUS "Epoll support: ${LIVE555_EPOLL_SUPPORT}")
-message(STATUS "Building examples: ${LIVE555_BUILD_EXAMPLES}")
+# Installation stuff
+set(config_version_file ${CMAKE_CURRENT_BINARY_DIR}/live555ConfigVersion.cmake)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(${config_version_file}
+                                 VERSION ${live555_VERSION}
+                                 COMPATIBILITY ExactVersion)
+
+install(FILES ${config_version_file}
+    DESTINATION lib/cmake/live555
+)
+
+install(EXPORT live555Target
+    NAMESPACE live555::
+    DESTINATION lib/cmake/live555
+    FILE live555Config.cmake
+)

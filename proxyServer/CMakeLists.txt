@@ -1,1 +1,1 @@
-add_test_executable(live555ProxyServer live555ProxyServer.cpp)
+live555_add_test_executable(live555ProxyServer live555ProxyServer.cpp)
