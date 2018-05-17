@@ -11,6 +11,7 @@ add_library(UsageEnvironment
     UsageEnvironment.cpp
     strDup.cpp
 )
+add_library(live555::UsageEnvironment ALIAS UsageEnvironment)
 target_include_directories(UsageEnvironment
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

@@ -338,6 +338,7 @@ add_library(liveMedia
     rtcp_from_spec.h
     uLawAudioFilter.cpp
 )
+add_library(live555::liveMedia ALIAS liveMedia)
 target_include_directories(liveMedia
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

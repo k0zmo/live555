@@ -19,6 +19,7 @@ add_library(groupsock
     NetInterface.cpp
     inet.c
 )
+add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

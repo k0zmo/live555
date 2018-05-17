@@ -15,6 +15,7 @@ add_library(BasicUsageEnvironment
     BasicUsageEnvironment0.cpp
     DelayQueue.cpp
 )
+add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

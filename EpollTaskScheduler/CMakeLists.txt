@@ -2,6 +2,7 @@ set(headers
     include/EpollTaskScheduler.hh
 )
 add_library(EpollTaskScheduler ${headers} EpollTaskScheduler.cpp)
+add_library(live555::EpollTaskScheduler ALIAS EpollTaskScheduler)
 
 if(WIN32)
     target_sources(EpollTaskScheduler 
