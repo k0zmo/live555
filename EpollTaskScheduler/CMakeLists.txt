@@ -35,9 +35,9 @@ set_target_properties(EpollTaskScheduler
 )
 
 install(TARGETS EpollTaskScheduler EXPORT live555Target
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin/$<CONFIG>
+    LIBRARY DESTINATION lib/$<CONFIG>
+    ARCHIVE DESTINATION lib/$<CONFIG>
 )
 install(FILES ${headers}
     DESTINATION include
