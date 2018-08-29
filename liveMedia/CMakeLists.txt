@@ -340,9 +340,7 @@ add_library(liveMedia
 )
 add_library(live555::liveMedia ALIAS liveMedia)
 target_include_directories(liveMedia
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(liveMedia PUBLIC groupsock UsageEnvironment)
 if(LIVE555_EPOLL_SUPPORT)
@@ -361,6 +359,7 @@ set_target_properties(liveMedia
 )
 
 install(TARGETS liveMedia EXPORT live555Target
+    INCLUDES DESTINATION include
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>

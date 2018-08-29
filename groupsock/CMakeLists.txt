@@ -21,9 +21,7 @@ add_library(groupsock
 )
 add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(groupsock UsageEnvironment)
 if(WIN32)
@@ -42,6 +40,7 @@ set_target_properties(groupsock
 )
 
 install(TARGETS groupsock EXPORT live555Target
+    INCLUDES DESTINATION include
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>

@@ -16,9 +16,7 @@ if(WIN32)
 endif()
 
 target_include_directories(EpollTaskScheduler
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(EpollTaskScheduler PUBLIC BasicUsageEnvironment)
 target_compile_definitions(EpollTaskScheduler INTERFACE HAVE_EPOLL_SCHEDULER)
@@ -35,6 +33,7 @@ set_target_properties(EpollTaskScheduler
 )
 
 install(TARGETS EpollTaskScheduler EXPORT live555Target
+    INCLUDES DESTINATION include
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>

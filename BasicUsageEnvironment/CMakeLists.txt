@@ -17,9 +17,7 @@ add_library(BasicUsageEnvironment
 )
 add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_link_libraries(BasicUsageEnvironment PUBLIC UsageEnvironment)
 live555_compile_options(BasicUsageEnvironment)
@@ -35,6 +33,7 @@ set_target_properties(BasicUsageEnvironment
 )
 
 install(TARGETS BasicUsageEnvironment EXPORT live555Target
+    INCLUDES DESTINATION include
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>
