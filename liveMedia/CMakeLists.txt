@@ -358,11 +358,11 @@ live555_target_version(liveMedia AUTO)
 set_target_properties(liveMedia PROPERTIES FOLDER "live555/lib")
 
 install(TARGETS liveMedia EXPORT live555Target
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION include/liveMedia
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>
 )
 install(FILES ${headers}
-    DESTINATION include
+    DESTINATION include/liveMedia
 )

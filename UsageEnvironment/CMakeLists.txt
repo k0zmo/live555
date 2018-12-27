@@ -23,11 +23,11 @@ live555_target_version(UsageEnvironment AUTO)
 set_target_properties(UsageEnvironment PROPERTIES FOLDER "live555/lib")
 
 install(TARGETS UsageEnvironment EXPORT live555Target
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION include/UsageEnvironment
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>
 )
 install(FILES ${headers}
-    DESTINATION include
+    DESTINATION include/UsageEnvironment
 )

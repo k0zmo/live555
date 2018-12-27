@@ -31,11 +31,11 @@ live555_target_version(EpollTaskScheduler
 set_target_properties(EpollTaskScheduler PROPERTIES FOLDER "live555/lib")
 
 install(TARGETS EpollTaskScheduler EXPORT live555Target
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION include/EpollTaskScheduler
     RUNTIME DESTINATION bin/$<CONFIG>
     LIBRARY DESTINATION lib/$<CONFIG>
     ARCHIVE DESTINATION lib/$<CONFIG>
 )
 install(FILES ${headers}
-    DESTINATION include
+    DESTINATION include/EpollTaskScheduler
 )
