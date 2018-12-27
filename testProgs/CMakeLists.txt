@@ -6,6 +6,7 @@ function(live555_add_test_executable _target)
         BasicUsageEnvironment
         $<$<TARGET_EXISTS:EpollTaskScheduler>:EpollTaskScheduler>
     )
+    set_target_properties(${_target} PROPERTIES FOLDER "live555/testProgs")
 endfunction()
 
 live555_add_test_executable(openRTSP

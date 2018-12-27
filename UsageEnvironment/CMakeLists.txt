@@ -20,6 +20,7 @@ target_include_directories(UsageEnvironment
 )
 target_link_libraries(UsageEnvironment PUBLIC live555_cxx_flags)
 live555_target_version(UsageEnvironment AUTO)
+set_target_properties(UsageEnvironment PROPERTIES FOLDER "live555/lib")
 
 install(TARGETS UsageEnvironment EXPORT live555Target
     INCLUDES DESTINATION include

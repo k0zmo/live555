@@ -28,6 +28,7 @@ live555_target_version(EpollTaskScheduler
     REVISION 0
     AGE 0
 )
+set_target_properties(EpollTaskScheduler PROPERTIES FOLDER "live555/lib")
 
 install(TARGETS EpollTaskScheduler EXPORT live555Target
     INCLUDES DESTINATION include

@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.9)
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/include/liveMedia_version.hh contents)
 string(REGEX MATCH "define LIVEMEDIA_LIBRARY_VERSION_STRING	\"([0-9\.]+)\"" _ ${contents})
 set(project_version ${CMAKE_MATCH_1})
+if(NOT DEFINED PROJECT_NAME)
+    set(master_project TRUE)
+endif()
 
 project(live555 
     LANGUAGES C CXX 
@@ -43,6 +46,10 @@ if(LIVE555_BUILD_EXAMPLES)
     add_subdirectory(testProgs)
     add_subdirectory(proxyServer)
     add_subdirectory(mediaServer)
+endif()
+
+if(master_project)
+    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
 # Installation stuff
