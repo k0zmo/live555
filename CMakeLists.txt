@@ -12,16 +12,29 @@ project(live555
 message(STATUS "live555 version: ${project_version}")
 
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
-include(live555)
+include(TargetVersion)
 
 option(LIVE555_EPOLL_SUPPORT "Enable epoll task scheduler (Windows also)" ON)
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
+
+add_library(live555_cxx_flags INTERFACE)
+if(WIN32)
+    target_compile_definitions(live555_cxx_flags INTERFACE
+        LOCALE_NOT_USED
+        SOCKLEN_T=int
+    )
+else()
+    target_compile_definitions(live555_cxx_flags INTERFACE
+        BSD=1
+        SOCKLEN_T=socklen_t
+    )
+endif()
+install(TARGETS live555_cxx_flags EXPORT live555Target)
 
 add_subdirectory(UsageEnvironment)
 add_subdirectory(groupsock)
 add_subdirectory(BasicUsageEnvironment)
 add_subdirectory(liveMedia)
-
 if(LIVE555_EPOLL_SUPPORT)
     add_subdirectory(EpollTaskScheduler)
 endif()

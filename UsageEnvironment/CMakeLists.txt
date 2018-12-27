@@ -18,7 +18,7 @@ target_include_directories(UsageEnvironment
         # This is a cyclic dependency :(
         $<BUILD_INTERFACE:${live555_SOURCE_DIR}/groupsock/include>
 )
-live555_compile_options(UsageEnvironment)
+target_link_libraries(UsageEnvironment PUBLIC live555_cxx_flags)
 live555_target_version(UsageEnvironment AUTO)
 
 install(TARGETS UsageEnvironment EXPORT live555Target

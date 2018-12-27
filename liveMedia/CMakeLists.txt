@@ -342,11 +342,14 @@ add_library(live555::liveMedia ALIAS liveMedia)
 target_include_directories(liveMedia
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(liveMedia PUBLIC groupsock UsageEnvironment)
+target_link_libraries(liveMedia PUBLIC
+    live555_cxx_flags
+    groupsock
+    UsageEnvironment
+)
 if(LIVE555_EPOLL_SUPPORT)
     target_compile_definitions(liveMedia PUBLIC READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
-live555_compile_options(liveMedia)
 live555_target_version(liveMedia AUTO)
 
 install(TARGETS liveMedia EXPORT live555Target

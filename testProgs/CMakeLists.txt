@@ -1,3 +1,13 @@
+function(live555_add_test_executable _target)
+    add_executable(${_target} ${ARGN})
+    target_link_libraries(${_target} PRIVATE
+        live555_cxx_flags
+        liveMedia
+        BasicUsageEnvironment
+        $<$<TARGET_EXISTS:EpollTaskScheduler>:EpollTaskScheduler>
+    )
+endfunction()
+
 live555_add_test_executable(openRTSP
     openRTSP.cpp
     playCommon.cpp

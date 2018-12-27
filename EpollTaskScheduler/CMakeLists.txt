@@ -18,9 +18,11 @@ endif()
 target_include_directories(EpollTaskScheduler
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(EpollTaskScheduler PUBLIC BasicUsageEnvironment)
+target_link_libraries(EpollTaskScheduler PUBLIC
+    live555_cxx_flags
+    BasicUsageEnvironment
+)
 target_compile_definitions(EpollTaskScheduler INTERFACE HAVE_EPOLL_SCHEDULER)
-live555_compile_options(EpollTaskScheduler)
 live555_target_version(EpollTaskScheduler 
     CURRENT 1
     REVISION 0
