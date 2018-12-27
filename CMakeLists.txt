@@ -1,8 +1,15 @@
 cmake_minimum_required(VERSION 3.9)
+
+# Parse version number from the header file
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/include/liveMedia_version.hh contents)
+string(REGEX MATCH "define LIVEMEDIA_LIBRARY_VERSION_STRING	\"([0-9\.]+)\"" _ ${contents})
+set(project_version ${CMAKE_MATCH_1})
+
 project(live555 
     LANGUAGES C CXX 
-    VERSION 2018.02.18
+    VERSION ${project_version}
 )
+message(STATUS "live555 version: ${project_version}")
 
 list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(live555)

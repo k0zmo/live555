@@ -21,16 +21,7 @@ target_include_directories(BasicUsageEnvironment
 )
 target_link_libraries(BasicUsageEnvironment PUBLIC UsageEnvironment)
 live555_compile_options(BasicUsageEnvironment)
-
-set(BasicUsageEnvironment_VERSION_CURRENT 1)
-set(BasicUsageEnvironment_VERSION_REVISION 1)
-set(BasicUsageEnvironment_VERSION_AGE 0)
-math(EXPR BasicUsageEnvironment_VERSION_MAJOR "${BasicUsageEnvironment_VERSION_CURRENT} - ${BasicUsageEnvironment_VERSION_AGE}")
-set_target_properties(BasicUsageEnvironment 
-    PROPERTIES 
-        VERSION ${BasicUsageEnvironment_VERSION_MAJOR}.${BasicUsageEnvironment_VERSION_AGE}.${BasicUsageEnvironment_VERSION_REVISION}
-        SOVERSION ${BasicUsageEnvironment_VERSION_MAJOR}
-)
+live555_target_version(BasicUsageEnvironment AUTO)
 
 install(TARGETS BasicUsageEnvironment EXPORT live555Target
     INCLUDES DESTINATION include

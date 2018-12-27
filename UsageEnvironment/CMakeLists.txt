@@ -19,16 +19,7 @@ target_include_directories(UsageEnvironment
         $<BUILD_INTERFACE:${live555_SOURCE_DIR}/groupsock/include>
 )
 live555_compile_options(UsageEnvironment)
-
-set(UsageEnvironment_VERSION_CURRENT 4)
-set(UsageEnvironment_VERSION_REVISION 0)
-set(UsageEnvironment_VERSION_AGE 1)
-math(EXPR UsageEnvironment_VERSION_MAJOR "${UsageEnvironment_VERSION_CURRENT} - ${UsageEnvironment_VERSION_AGE}")
-set_target_properties(UsageEnvironment 
-    PROPERTIES 
-        VERSION ${UsageEnvironment_VERSION_MAJOR}.${UsageEnvironment_VERSION_AGE}.${UsageEnvironment_VERSION_REVISION}
-        SOVERSION ${UsageEnvironment_VERSION_MAJOR}
-)
+live555_target_version(UsageEnvironment AUTO)
 
 install(TARGETS UsageEnvironment EXPORT live555Target
     INCLUDES DESTINATION include

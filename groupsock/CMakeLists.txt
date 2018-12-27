@@ -28,16 +28,7 @@ if(WIN32)
     target_link_libraries(groupsock ws2_32 mswsock)
 endif()
 live555_compile_options(groupsock)
-
-set(groupsock_VERSION_CURRENT 9)
-set(groupsock_VERSION_REVISION 1)
-set(groupsock_VERSION_AGE 1)
-math(EXPR groupsock_VERSION_MAJOR "${groupsock_VERSION_CURRENT} - ${groupsock_VERSION_AGE}")
-set_target_properties(groupsock
-    PROPERTIES 
-        VERSION ${groupsock_VERSION_MAJOR}.${groupsock_VERSION_AGE}.${groupsock_VERSION_REVISION}
-        SOVERSION ${groupsock_VERSION_MAJOR}
-)
+live555_target_version(groupsock AUTO)
 
 install(TARGETS groupsock EXPORT live555Target
     INCLUDES DESTINATION include

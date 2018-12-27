@@ -347,16 +347,7 @@ if(LIVE555_EPOLL_SUPPORT)
     target_compile_definitions(liveMedia PUBLIC READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
 live555_compile_options(liveMedia)
-
-set(liveMedia_VERSION_CURRENT 62)
-set(liveMedia_VERSION_REVISION 2)
-set(liveMedia_VERSION_AGE 0)
-math(EXPR liveMedia_VERSION_MAJOR "${liveMedia_VERSION_CURRENT} - ${liveMedia_VERSION_AGE}")
-set_target_properties(liveMedia
-    PROPERTIES 
-        VERSION ${liveMedia_VERSION_MAJOR}.${liveMedia_VERSION_AGE}.${liveMedia_VERSION_REVISION}
-        SOVERSION ${liveMedia_VERSION_MAJOR}
-)
+live555_target_version(liveMedia AUTO)
 
 install(TARGETS liveMedia EXPORT live555Target
     INCLUDES DESTINATION include
