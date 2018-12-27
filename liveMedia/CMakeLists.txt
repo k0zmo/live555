@@ -119,6 +119,8 @@ set(headers
     include/QCELPAudioRTPSource.hh
     include/QuickTimeFileSink.hh
     include/QuickTimeGenericRTPSource.hh
+    include/RawVideoRTPSink.hh
+    include/RawVideoRTPSource.hh
     include/RTCP.hh
     include/RTPInterface.hh
     include/RTPSink.hh
@@ -302,6 +304,8 @@ add_library(liveMedia
     QCELPAudioRTPSource.cpp
     QuickTimeFileSink.cpp
     QuickTimeGenericRTPSource.cpp
+    RawVideoRTPSink.cpp
+    RawVideoRTPSource.cpp
     RTCP.cpp
     RTPInterface.cpp
     RTPSink.cpp

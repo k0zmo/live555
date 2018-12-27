@@ -1,3 +1,79 @@
+2018.12.14:
+- Added support for sending (and handling) RTCP "BYE" packets that contain a 'reason' string.
+  This required a change to the API.  This change is backwards-compatible; however, existing
+  application code will need to be recompiled.
+  The function "RTCPInstance::sendBYE()" now takes an optional "reason" (string) parameter.
+  And there's now a new function "RTCPInstance::setByeWithReasonHandler()", which is similar to
+  the existing function ""RTCPInstance::setByeHandler()", except that the handler function takes
+  a "reason" parameter.  (The "reason" string should be delete[]d by the handler function.)
+  (Thanks to Denis Genestier for this suggestion.)
+2018.11.26:
+- Fixed a bug in the server implementation of RTSP-over-HTTP to prevent a potential
+  denial-of-service attack.  (Thanks to Huawei for reporting this issue.)
+
+2018.10.17:
+- Fixed a bug in the server implementation of RTSP-over-HTTP to prevent a possible buffer
+  overflow problem.  (Thanks to Cisco for reporting this issue.)
+
+2018.10.10:
+- Updated the #ifdefs in "GroupsockHelper.cpp" to account for recent changes to 'Android'.
+  (Thanks to Brian Chase for providing a patch.)
+
+2018.09.18:
+- Fixed a bug in "RawVideoRTPSink".  (Thanks to Denis Genestier.)
+
+2018.09.10:
+- Fixed a potential 'double deletion' in "RawVideoRTPSource.cpp". (Thanks to Denis Genestier.)
+
+2018.09.06:
+- Removed some stray files that had accidentally been left in the previous release.
+
+2018.09.05:
+- Added "RawVideoRTPSink" for streaming raw video over RTP, and also updated "MatroskaFile"
+  to support Matroska files that contain raw video tracks.
+  (Many thanks to Denis Genestier for contributing this.)
+
+2018.08.28a:
+- Oops, the previous version wasn't building properly; it's fixed now.
+
+2018.08.28:
+- Fixed a bug in "RawVideoRTPSource" (it was instantiating the wrong 'factory' subclass)
+
+2018.08.27:
+- Fixed a problem (in "GroupsockHelper.cpp") that could cause compilation problems on Mac OS X.
+
+2018.08.26:
+- Updated the RTSP server implementation to protect against a bogus "Content-Length:" value
+  (in a request from a client) causing a pointer wraparound.
+  (Thanks to Ori Hollander of VDOO for reporting this.)
+
+2018.08.05:
+- Added a new class "RawVideoRTPSource" for handling incoming 'raw video' RTP packets (RFC 4175).
+  (Thanks to Denis Genestier for providing the first draft of this.)
+
+2018.07.07:
+- Fixed a problem with the "openRTSP" application, if it's run with both the "-c" and "-P <interval>"
+  options.  (Thanks to Giancarlo for noticing this.)
+
+2018.07.01:
+- Added a new "groupsock" function "setSocketKeepAlive()" which (tries to) set up a 'keepalive'
+  on TCP sockets, so that it will survive temporary network interruptions.  Add an option for
+  calling this to the "setupStreamSocket()" function, and call this when creating sockets for
+  the RTSP server.
+  (Thanks to Warren Young and Denis Genestier for this suggestion.)
+
+2018.04.25:
+- Fixed the implementation of "unpackBandwidthEfficientData()" in "AMRAudioRTPSource", to ensure
+  that we can never overflow the output buffer.  (Thanks to GRIMM for reporting this issue.)
+
+2018.02.28:
+- Updated "RTSPClient" to properly handle a completely empty response to "GET_PARAMETER".
+  (Thanks to Eric Heurtel for noting this issue.)
+
+2018.02.26:
+- Added protection against an alleged potential memory leak in
+  "OnDemandServerMediaSubsession::setSDPLinesFromRTPSink()".
+
 2018.02.18:
 - Updated "config.macosx" to add "-DNEED_XLOCALE_H=1" to the command line for compiling, to
   compensate for the changes made in the previous release.
