@@ -352,7 +352,7 @@ target_link_libraries(liveMedia PUBLIC
     UsageEnvironment
 )
 if(LIVE555_EPOLL_SUPPORT)
-    target_compile_definitions(liveMedia PUBLIC READ_FROM_FILES_SYNCHRONOUSLY)
+    target_compile_definitions(liveMedia PRIVATE READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
 live555_target_version(liveMedia AUTO)
 set_target_properties(liveMedia PROPERTIES FOLDER "live555/lib")
