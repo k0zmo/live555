@@ -26,11 +26,13 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 ////////// MPEGProgramStreamParser definition //////////
 
 // An enum representing the current state of the parser:
+namespace {
 enum MPEGParseState {
   PARSING_PACK_HEADER,
   PARSING_SYSTEM_HEADER,
   PARSING_PES_PACKET
 };
+}
 
 class MPEGProgramStreamParser: public StreamParser {
 public:

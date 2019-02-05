@@ -26,6 +26,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 ////////// MPEG1or2VideoStreamParser definition //////////
 
 // An enum representing the current state of the parser:
+namespace {
 enum MPEGParseState {
   PARSING_VIDEO_SEQUENCE_HEADER,
   PARSING_VIDEO_SEQUENCE_HEADER_SEEN_CODE,
@@ -34,6 +35,7 @@ enum MPEGParseState {
   PARSING_PICTURE_HEADER,
   PARSING_SLICE
 };
+}
 
 #define VSH_MAX_SIZE 1000
 
