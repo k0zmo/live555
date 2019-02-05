@@ -9,8 +9,8 @@ function(__live555_target_version_impl _target _current _revision _age)
 endfunction()
 
 function(live555_target_version _target)
-    cmake_parse_arguments(options "AUTO" "CURRENT;REVISION;AGE" "" ${ARGN})
-    if(options_AUTO)
+    cmake_parse_arguments(arg "AUTO" "CURRENT;REVISION;AGE" "" ${ARGN})
+    if(arg_AUTO)
         # Versioning based on contens in the config.linux-with-shared-libraries file
         file(READ "${live555_SOURCE_DIR}/config.linux-with-shared-libraries" contents)
         string(REGEX MATCH "lib${_target}_VERSION_CURRENT=([0-9]+)" _ ${contents})
@@ -28,15 +28,15 @@ function(live555_target_version _target)
     endif()
 
     # Manual versioning
-    if(NOT DEFINED options_CURRENT OR 
-       NOT DEFINED options_REVISION OR
-       NOT DEFINED options_AGE)
+    if(NOT DEFINED arg_CURRENT OR 
+       NOT DEFINED arg_REVISION OR
+       NOT DEFINED arg_AGE)
         message(FATAL_ERROR "Unsufficient number arguments provided")
     endif()
     __live555_target_version_impl(${_target} 
-        ${options_CURRENT}
-        ${options_REVISION}
-        ${options_AGE}
+        ${arg_CURRENT}
+        ${arg_REVISION}
+        ${arg_AGE}
     )
 endfunction()
 
