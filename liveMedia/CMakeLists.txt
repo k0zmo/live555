@@ -56,6 +56,8 @@ set(headers
     include/H265VideoStreamDiscreteFramer.hh
     include/H265VideoStreamFramer.hh
     include/InputFile.hh
+    include/JPEG2000VideoRTPSink.hh
+    include/JPEG2000VideoRTPSource.hh
     include/JPEGVideoRTPSink.hh
     include/JPEGVideoRTPSource.hh
     include/JPEGVideoSource.hh
@@ -217,6 +219,8 @@ add_library(liveMedia
     H265VideoStreamDiscreteFramer.cpp
     H265VideoStreamFramer.cpp
     InputFile.cpp
+    JPEG2000VideoRTPSink.cpp
+    JPEG2000VideoRTPSource.cpp
     JPEGVideoRTPSink.cpp
     JPEGVideoRTPSource.cpp
     JPEGVideoSource.cpp
