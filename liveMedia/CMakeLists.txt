@@ -55,6 +55,9 @@ set(headers
     include/H265VideoRTPSource.hh
     include/H265VideoStreamDiscreteFramer.hh
     include/H265VideoStreamFramer.hh
+    include/HLSSegmenter.hh
+    include/HMAC_hash.hh
+    include/HMAC_SHA1.hh
     include/InputFile.hh
     include/JPEG2000VideoRTPSink.hh
     include/JPEG2000VideoRTPSource.hh
@@ -85,6 +88,7 @@ set(headers
     include/MPEG2IndexFromTransportStream.hh
     include/MPEG2TransportFileServerMediaSubsession.hh
     include/MPEG2TransportStreamAccumulator.hh
+    include/MPEG2TransportStreamDemux.hh
     include/MPEG2TransportStreamFramer.hh
     include/MPEG2TransportStreamFromESSource.hh
     include/MPEG2TransportStreamFromPESSource.hh
@@ -109,6 +113,7 @@ set(headers
     include/MediaSink.hh
     include/MediaSource.hh
     include/MediaTranscodingTable.hh
+    include/MIKEY.hh
     include/MultiFramedRTPSink.hh
     include/MultiFramedRTPSource.hh
     include/OggFile.hh
@@ -133,6 +138,7 @@ set(headers
     include/RTSPServer.hh
     include/RTSPServerSupportingHTTPStreaming.hh
     include/SIPClient.hh
+    include/SRTPCryptographicContext.hh
     include/ServerMediaSession.hh
     include/SimpleRTPSink.hh
     include/SimpleRTPSource.hh
@@ -142,6 +148,7 @@ set(headers
     include/TextRTPSink.hh
     include/TheoraVideoRTPSink.hh
     include/TheoraVideoRTPSource.hh
+    include/TLSState.hh
     include/VP8VideoRTPSink.hh
     include/VP8VideoRTPSource.hh
     include/VP9VideoRTPSink.hh
@@ -218,6 +225,8 @@ add_library(liveMedia
     H265VideoRTPSource.cpp
     H265VideoStreamDiscreteFramer.cpp
     H265VideoStreamFramer.cpp
+    HLSSegmenter.cpp
+    HMAC_SHA1.cpp
     InputFile.cpp
     JPEG2000VideoRTPSink.cpp
     JPEG2000VideoRTPSource.cpp
@@ -259,11 +268,19 @@ add_library(liveMedia
     MPEG2IndexFromTransportStream.cpp
     MPEG2TransportFileServerMediaSubsession.cpp
     MPEG2TransportStreamAccumulator.cpp
+    MPEG2TransportStreamDemux.cpp
+    MPEG2TransportStreamDemuxedTrack.cpp
+    MPEG2TransportStreamDemuxedTrack.hh
     MPEG2TransportStreamFramer.cpp
     MPEG2TransportStreamFromESSource.cpp
     MPEG2TransportStreamFromPESSource.cpp
     MPEG2TransportStreamIndexFile.cpp
     MPEG2TransportStreamMultiplexor.cpp
+    MPEG2TransportStreamParser.cpp
+    MPEG2TransportStreamParser.hh
+    MPEG2TransportStreamParser_PAT.cpp
+    MPEG2TransportStreamParser_PMT.cpp
+    MPEG2TransportStreamParser_STREAM.cpp
     MPEG2TransportStreamTrickModeFilter.cpp
     MPEG2TransportUDPServerMediaSubsession.cpp
     MPEG4ESVideoRTPSink.cpp
@@ -290,6 +307,7 @@ add_library(liveMedia
     MediaSession.cpp
     MediaSink.cpp
     MediaSource.cpp
+    MIKEY.cpp
     MultiFramedRTPSink.cpp
     MultiFramedRTPSource.cpp
     OggDemuxedTrack.cpp
@@ -321,6 +339,7 @@ add_library(liveMedia
     RTSPServerRegister.cpp
     RTSPServerSupportingHTTPStreaming.cpp
     SIPClient.cpp
+    SRTPCryptographicContext.cpp
     ServerMediaSession.cpp
     SimpleRTPSink.cpp
     SimpleRTPSource.cpp
@@ -332,6 +351,7 @@ add_library(liveMedia
     TextRTPSink.cpp
     TheoraVideoRTPSink.cpp
     TheoraVideoRTPSource.cpp
+    TLSState.cpp
     VP8VideoRTPSink.cpp
     VP8VideoRTPSource.cpp
     VP9VideoRTPSink.cpp

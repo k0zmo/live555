@@ -5,11 +5,11 @@ file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/include/liveMedia_version.hh con
 string(REGEX MATCH "define LIVEMEDIA_LIBRARY_VERSION_STRING	\"([0-9\.]+)\"" _ ${contents})
 set(project_version ${CMAKE_MATCH_1})
 if(NOT DEFINED PROJECT_NAME)
-    set(master_project TRUE)
+    set(live555_master_project TRUE)
 endif()
 
-project(live555 
-    LANGUAGES C CXX 
+project(live555
+    LANGUAGES C CXX
     VERSION ${project_version}
 )
 message(STATUS "live555 version: ${project_version}")
@@ -18,7 +18,8 @@ list(APPEND CMAKE_MODULE_PATH ${live555_SOURCE_DIR}/cmake)
 include(TargetVersion)
 
 option(LIVE555_EPOLL_SUPPORT "Enable epoll task scheduler (Windows also)" ON)
-option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" OFF)
+option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" ${live555_master_project})
+option(LIVE555_ENABLE_OPENSSL "Build with OpenSSL support (rtsps, SRTP)." ON)
 
 add_library(live555_cxx_flags INTERFACE)
 if(WIN32)
@@ -32,6 +33,17 @@ else()
         SOCKLEN_T=socklen_t
     )
 endif()
+
+if(LIVE555_ENABLE_OPENSSL)
+    find_package(OpenSSL 1.1.1 REQUIRED COMPONENTS Crypto SSL)
+    target_link_libraries(live555_cxx_flags INTERFACE
+        OpenSSL::Crypto
+        OpenSSL::SSL
+    )
+else()
+    target_compile_definitions(live555_cxx_flags INTERFACE NO_OPENSSL=1)
+endif()
+
 install(TARGETS live555_cxx_flags EXPORT live555Target)
 
 add_subdirectory(UsageEnvironment)
@@ -48,7 +60,7 @@ if(LIVE555_BUILD_EXAMPLES)
     add_subdirectory(mediaServer)
 endif()
 
-if(master_project)
+if(live555_master_project)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
 
