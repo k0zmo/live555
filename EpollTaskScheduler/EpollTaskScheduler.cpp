@@ -19,7 +19,7 @@ along with this library; if not, write to the Free Software Foundation, Inc.,
 
 #include "EpollTaskScheduler.hh"
 #if defined(__WIN32__) || defined(_WIN32)
-#include "epoll.h"
+#include "wepoll.h"
 #define EPOLL_INVALID NULL
 #else
 #include <sys/epoll.h>
@@ -35,11 +35,7 @@ EpollTaskScheduler* EpollTaskScheduler::createNew(unsigned maxSchedulerGranulari
 EpollTaskScheduler::EpollTaskScheduler(unsigned maxSchedulerGranularity)
   : fMaxSchedulerGranularity(maxSchedulerGranularity), fEpollHandle(EPOLL_INVALID)
 {
-#if defined(__WIN32__) || defined(_WIN32)
-  fEpollHandle = epoll_create();
-#else
   fEpollHandle = epoll_create(1024 /*ignored*/);
-#endif
 
   if (fEpollHandle == EPOLL_INVALID) {
     internalError();
@@ -49,11 +45,9 @@ EpollTaskScheduler::EpollTaskScheduler(unsigned maxSchedulerGranularity)
 }
 
 EpollTaskScheduler::~EpollTaskScheduler() {
-#if defined(__WIN32__) || defined(_WIN32)
   if (fEpollHandle != EPOLL_INVALID) {
     epoll_close(fEpollHandle);
   }
-#endif
 }
 
 void EpollTaskScheduler::schedulerTickTask(void* clientData) {
@@ -159,7 +153,7 @@ void EpollTaskScheduler
   const HandlerDescriptor* handler = lookupHandlerDescriptor(socketNum);
   if (handler != NULL) {
       epoll_ctl(fEpollHandle, EPOLL_CTL_DEL, socketNum, &ev);
-  }  
+  }
 
   if (conditionSet == 0) {
     fHandlers->clearHandler(socketNum);

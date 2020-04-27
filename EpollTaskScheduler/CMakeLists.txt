@@ -5,13 +5,9 @@ add_library(EpollTaskScheduler ${headers} EpollTaskScheduler.cpp)
 add_library(live555::EpollTaskScheduler ALIAS EpollTaskScheduler)
 
 if(WIN32)
-    target_sources(EpollTaskScheduler 
-        PRIVATE 
-            epoll.c 
-            epoll.h
-            msafd.h
-            ntapi.h
-            tree.h
+    target_sources(EpollTaskScheduler PRIVATE 
+        wepoll.c 
+        wepoll.h
     )
 endif()
 
