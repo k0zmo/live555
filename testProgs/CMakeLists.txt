@@ -26,7 +26,6 @@ live555_add_test_executable(testOnDemandRTSPServer testOnDemandRTSPServer.cpp)
 
 # TODO: No epoll here yet
 live555_add_test_executable(MPEG2TransportStreamIndexer MPEG2TransportStreamIndexer.cpp)
-live555_add_test_executable(live555HLSProxy live555HLSProxy.cpp)
 live555_add_test_executable(mikeyParse mikeyParse.cpp)
 live555_add_test_executable(registerRTSPStream registerRTSPStream.cpp)
 live555_add_test_executable(sapWatch sapWatch.cpp)

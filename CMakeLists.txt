@@ -58,6 +58,7 @@ if(LIVE555_BUILD_EXAMPLES)
     add_subdirectory(testProgs)
     add_subdirectory(proxyServer)
     add_subdirectory(mediaServer)
+    add_subdirectory(hlsProxy)
 endif()
 
 if(live555_master_project)

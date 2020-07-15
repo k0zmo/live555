@@ -5,6 +5,7 @@ set(headers
     include/AC3AudioStreamFramer.hh
     include/ADTSAudioFileServerMediaSubsession.hh
     include/ADTSAudioFileSource.hh
+    include/ADTSAudioStreamDiscreteFramer.hh
     include/AMRAudioFileServerMediaSubsession.hh
     include/AMRAudioFileSink.hh
     include/AMRAudioFileSource.hh
@@ -136,7 +137,6 @@ set(headers
     include/RTSPCommon.hh
     include/RTSPRegisterSender.hh
     include/RTSPServer.hh
-    include/RTSPServerSupportingHTTPStreaming.hh
     include/SIPClient.hh
     include/SRTPCryptographicContext.hh
     include/ServerMediaSession.hh
@@ -144,7 +144,6 @@ set(headers
     include/SimpleRTPSource.hh
     include/StreamReplicator.hh
     include/T140TextRTPSink.hh
-    include/TCPStreamSink.hh
     include/TextRTPSink.hh
     include/TheoraVideoRTPSink.hh
     include/TheoraVideoRTPSource.hh
@@ -171,6 +170,7 @@ add_library(liveMedia
     AC3AudioStreamFramer.cpp
     ADTSAudioFileServerMediaSubsession.cpp
     ADTSAudioFileSource.cpp
+    ADTSAudioStreamDiscreteFramer.cpp
     AMRAudioFileServerMediaSubsession.cpp
     AMRAudioFileSink.cpp
     AMRAudioFileSource.cpp
@@ -337,7 +337,6 @@ add_library(liveMedia
     RTSPRegisterSender.cpp
     RTSPServer.cpp
     RTSPServerRegister.cpp
-    RTSPServerSupportingHTTPStreaming.cpp
     SIPClient.cpp
     SRTPCryptographicContext.cpp
     ServerMediaSession.cpp
@@ -347,7 +346,6 @@ add_library(liveMedia
     StreamParser.hh
     StreamReplicator.cpp
     T140TextRTPSink.cpp
-    TCPStreamSink.cpp
     TextRTPSink.cpp
     TheoraVideoRTPSink.cpp
     TheoraVideoRTPSource.cpp

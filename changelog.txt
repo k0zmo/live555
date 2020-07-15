@@ -1,3 +1,60 @@
+2020.07.09:
+- Fixed a potential buffer overflow bug in the server handling of a RTSP "PLAY" command,
+  when the command specifies seeking by absolute time.
+  (Thank to Xiaobo Xiang for reporting this.)
+2020.06.25:
+- Fixed a memory leak in the "sha1()" function (a "EVP_MD_CTX" object was not being deleted).
+  (Thanks to Amir Perlman for reporting this.)
+2020.06.23:
+- Moved all definitions of PREFIX from "Makefile.tail" files to "Makefile.head" (so that
+  it can be redefined by a "config.*" file, if desired.
+  Also changed the definition of EXE in "config.mingw" to be ".exe".
+  (Thanks to Eric Beuque for this suggestion.)
+2020.06.22:
+- Fixed a typo in the previous release that could cause a compilation problem for some
+  developers.  (Thanks to Eric Beuque for reporting this.)
+2020.05.15:
+- Added a new filter class "ADTSAudioStreamDiscreteFramer" that prepends ADTS headers to
+  incoming AAC audio frames.  This makes the AAC audio playable (by media players)
+- Updated "openRTSP" to use a "ADTSAudioStreamDiscreteFramer" when outputting a AAC audio
+  stream.  This makes the resulting file playable (by media players).
+- Updated the "LIVE555 HLS Proxy" to support AAC audio tracks (as well as H.264/5 video).
+2020.05.14:
+- Updated "H264or5VideoStreamDiscreteFramer" to add VPS,SPS,PPS NAL units (if known) to
+  the output stream, each time an "access_unit_delimiter" NAL unit is added.
+  This makes it more likely that the Transport Stream segments produced by the
+  "LIVE555 HLS Proxy" will be understandable by a client browser.
+- Added support for H.265 video streams to the "LIVE555 HLS Proxy".  (This has not yet been
+  fully tested.)
+2020.05.13:
+- Made the "MPEG2TransportStreamMultiplexor" segmentation mechanism (used by "HLSSegmenter")
+  more robust in case the Transport Stream PTS is not monotonic non-decreasing.
+2020.04.24:
+- Fixed an apparent bug in "RTSPClient" that was causing it to not always send an
+  "Authorization:" header when sending a RTSP "OPTIONS" command.
+  (Thanks to Alexander Prohorov for reporting this.)
+2020.04.12:
+- Updated "config.linux-with-shared-libraries" (and "liveMedia/Makefile.tail") to ensure
+  that "libssl" and "libcrypto" are linked when "libliveMedia" is built.
+  (Thanks to Felix Kaechele for reporting this.)
+2020.04.06:
+- Removed support for the classes “RTSPServerSupportingHTTPStreaming” and "TCPStreamSink”.
+  These were being used (in the "LIVE555 Media Server") for streaming using
+  "HTTP Live Streaming" (HLS).  This was always a hack; it is better to use a dedicated
+  HTTP server to serve HLS segments, rather than trying to implement a HTTP server
+  (serving 'virtual HLS segments) within our own (primarily RTSP) server.
+
+  If you are looking for HLS support, note that we provide a source-code demo application
+  "testH264VideoToHLSSegments" that converts a (static) H.264 Elementary Stream file to
+  HLS segments, and the "LIVE555 HLS Proxy", which proxies a live RTSP/RTP stream
+  to HLS segments.
+2020.03.06:
+- Fixed a problem in "H264or5VideoStreamFramer.cpp" that was allegedly causing problems
+  compiling for Windows.
+2020.02.25:
+- Added full support for the "LIVE555 HLS Proxy" ("live555HLSProxy") application, which
+  is documented at:
+      http://live555.com/hlsProxy/
 2020.02.24:
 - Commented out a line of code that was preventing "RTSPClientConnection" objects from being
   closed when a RTSP server handles a "TEARDOWN" command (on a RTP-over-TCP stream).
@@ -609,7 +666,7 @@
 2016.01.16:
 - This release has no source-code changes from the previous release.  However, a test file was
   mistakenly left in the previous version; this produced an excessively-large tar file.
-  This has now been removed.          
+  This has now been removed.    	    
 
 2016.01.12:
 - Added a hack to "RTSPClient" to handle the non-standard "com.ses.streamID:" header - used by
@@ -1737,11 +1794,11 @@
   the public Internet.
   To send a "REGISTER" request (for an existing stream, described by a "ServerMediaSession" object that was added to a "RTSPServer"
       object), call the new member function
-     "RTSPServer::registerStream()"
+	   "RTSPServer::registerStream()"
       specifying the remote client (or proxy server)'s name or IP address, and port number.
   To create a simple server that accepts incoming "REGISTER" (or "REGISTER_REMOTE") requests, and then creates a new "RTSPClient"
       object to handle the "rtsp://" URL specified by each such incoming request, create a
-   "HandlerServerForREGISTERCommand"
+	 "HandlerServerForREGISTERCommand"
       object, by calling "HandlerServerForREGISTERCommand::createNew()" (see "liveMedia/include/RTSPClient.hh").
       (For an illustration of this, note how we implement the new '-R' command-line option for the "openRTSP" application.)
   To create a proxy server that automatically accepts incoming "REGISTER" (or "REGISTER_REMOTE") requests, and proxies the
@@ -2221,12 +2278,12 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
     - To automatically have your streams advertised (in their SDP description) as supporting absolute time indexing,
       reimplement (in your subclass) the virtual function:
         "virtual void getAbsoluteTimeRange(char*& absStartTime, char*& absEndTime) const;"
-    (see "liveMedia/include/ServerMediaSession.hh").
+	  (see "liveMedia/include/ServerMediaSession.hh").
       This function should set "absStartTime" to a string value (of the form noted above), and should set "absEndTime" to
       a corresponding string value, if the stream has an end time, otherwise NULL.
     - To implement seeking by absolute time, reimplement (in your subclass) the virtual function:
         "virtual void seekStreamSource(FramedSource* inputSource, char*& absStart, char*& absEnd);"
-    (see "liveMedia/include/OnDemandServerMediaSubsession.hh").
+	  (see "liveMedia/include/OnDemandServerMediaSubsession.hh").
       "absStart" (and "absEnd", if non-NULL) are strings (of the form noted above).
       (The function *may* change them, to make them more accurate.)      
   - For RTSP client developers:
@@ -3171,7 +3228,7 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
 2010.01.22:
 - Changed the implementation of "Socket::changePort()" once again, beause it was reported that the change made in version
   2010.01.15 didn't work.  Note, however, that this change also introduces a new function
-       virtual void moveSocketHandling(int oldSocketNum, int newSocketNum) = 0;
+	     virtual void moveSocketHandling(int oldSocketNum, int newSocketNum) = 0;
   to the "TaskScheduler" API.  We have implemented this for "BasicTaskScheduler".  If you implement your own subclass of
   "TaskScheduler", then you will need to implement this new function as well.
 
@@ -3362,7 +3419,7 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
 - Fixed a minor memory leak in the "createNew()" functions for
   "AVIFileSink" and "QuickTimeFileSink" if the output fid did not get created.
   (Thanks to Mehmet Ozgul for noting this.)
-- Fixed a couple of spelling erros, removed some unnecessary whitespace,
+- Fixed a couple of spelling errors, removed some unnecessary whitespace,
   and updated the address of the FSF in the LGPL preamble (thanks to Erik Hovland).
 
 2008.09.02:
@@ -3489,8 +3546,8 @@ Made several changes to the implementation of "ProxyServerMediaSession" (and rel
 
 2007.11.01:
 - Several of the options to "openRTSP" have now been changed, with two new options added:
-    -s <initial-seek-time>
-    -z <scale>
+	  -s <initial-seek-time>
+	  -z <scale>
   See the "openRTSP" documentation <http://www.live555.com/openRTSP/> for details.
 - Fixed a bug in the way that "MPEG4VideoStreamDiscreteFramer" parses 'config' information (for inclusion in
   the stream's SDP description).  (Thanks to Nicola Bova for helping to identify this bug.)
@@ -5697,7 +5754,7 @@ synchronized.
 
 2002.10.21:
 Changed the top-level Unix Makefile to do
-  make --directory=<dir>
+	make --directory=<dir>
 rather than
        cd <dir>; make
 as the latter apparently didn't work with cygwin.
