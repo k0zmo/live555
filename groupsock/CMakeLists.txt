@@ -23,11 +23,13 @@ add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
-target_link_libraries(groupsock 
-    live555_cxx_flags
-    UsageEnvironment
-    $<$<PLATFORM_ID:Windows>:ws2_32 mswsock>
+target_link_libraries(groupsock
+    PRIVATE live555_cxx_flags
+    PUBLIC  UsageEnvironment
 )
+if(WIN32)
+    target_link_libraries(groupsock PRIVATE ws2_32 mswsock)
+endif()
 live555_target_version(groupsock AUTO)
 set_target_properties(groupsock PROPERTIES FOLDER "live555/lib")
 
