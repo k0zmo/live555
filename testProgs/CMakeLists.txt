@@ -1,11 +1,6 @@
 function(live555_add_test_executable _target)
     add_executable(${_target} ${ARGN})
-    target_link_libraries(${_target} PRIVATE
-        live555_cxx_flags
-        liveMedia
-        BasicUsageEnvironment
-        $<$<TARGET_EXISTS:EpollTaskScheduler>:EpollTaskScheduler>
-    )
+    target_link_libraries(${_target} PRIVATE live555::live555)
     set_target_properties(${_target} PROPERTIES FOLDER "live555/testProgs")
 endfunction()
 

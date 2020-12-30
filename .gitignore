@@ -1,3 +1,5 @@
 .vs
-[Bb]uild
-[Bb]in
+/[Bb]uild
+/[Bb]in
+/_[Bb]uild
+*.user

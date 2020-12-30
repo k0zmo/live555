@@ -54,6 +54,25 @@ if(LIVE555_EPOLL_SUPPORT)
     add_subdirectory(EpollTaskScheduler)
 endif()
 
+add_library(live555 INTERFACE)
+add_library(live555::live555 ALIAS live555)
+target_link_libraries(live555 INTERFACE
+    UsageEnvironment
+    groupsock
+    BasicUsageEnvironment
+    liveMedia
+)
+if(TARGET EpollTaskScheduler)
+    target_link_libraries(live555 INTERFACE EpollTaskScheduler)
+endif()
+
+install(TARGETS live555 EXPORT live555Target
+    INCLUDES DESTINATION include/liveMedia
+    RUNTIME DESTINATION bin/$<CONFIG>
+    LIBRARY DESTINATION lib/$<CONFIG>
+    ARCHIVE DESTINATION lib/$<CONFIG>
+)
+
 if(LIVE555_BUILD_EXAMPLES)
     add_subdirectory(testProgs)
     add_subdirectory(proxyServer)
