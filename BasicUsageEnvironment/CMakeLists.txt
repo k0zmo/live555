@@ -6,7 +6,7 @@ set(headers
     include/DelayQueue.hh
     include/HandlerSet.hh
 )
-add_library(BasicUsageEnvironment
+add_library(BasicUsageEnvironment ${live555_library_type}
     ${headers}
     BasicHashTable.cpp
     BasicTaskScheduler.cpp
@@ -15,7 +15,6 @@ add_library(BasicUsageEnvironment
     BasicUsageEnvironment0.cpp
     DelayQueue.cpp
 )
-add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
 target_include_directories(BasicUsageEnvironment
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -23,8 +22,12 @@ target_link_libraries(BasicUsageEnvironment PUBLIC
     live555_cxx_flags
     UsageEnvironment
 )
-live555_target_version(BasicUsageEnvironment AUTO)
 set_target_properties(BasicUsageEnvironment PROPERTIES FOLDER "live555/lib")
+
+if(NOT LIVE555_MONOLITH_BUILD)
+    add_library(live555::BasicUsageEnvironment ALIAS BasicUsageEnvironment)
+    live555_target_version(BasicUsageEnvironment AUTO)
+endif()
 
 install(TARGETS BasicUsageEnvironment EXPORT live555Target
     INCLUDES DESTINATION include/BasicUsageEnvironment

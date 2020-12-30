@@ -20,6 +20,7 @@ include(TargetVersion)
 option(LIVE555_EPOLL_SUPPORT "Enable epoll task scheduler (Windows also)" ON)
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" ${live555_master_project})
 option(LIVE555_ENABLE_OPENSSL "Build with OpenSSL support (rtsps, SRTP)." ON)
+option(LIVE555_MONOLITH_BUILD "Build all modules as one monolithic library" OFF)
 
 add_library(live555_cxx_flags INTERFACE)
 if(WIN32)
@@ -46,6 +47,10 @@ endif()
 
 install(TARGETS live555_cxx_flags EXPORT live555Target)
 
+if(LIVE555_MONOLITH_BUILD)
+    set(live555_library_type OBJECT)
+endif()
+
 add_subdirectory(UsageEnvironment)
 add_subdirectory(groupsock)
 add_subdirectory(BasicUsageEnvironment)
@@ -54,16 +59,42 @@ if(LIVE555_EPOLL_SUPPORT)
     add_subdirectory(EpollTaskScheduler)
 endif()
 
-add_library(live555 INTERFACE)
-add_library(live555::live555 ALIAS live555)
-target_link_libraries(live555 INTERFACE
-    UsageEnvironment
-    groupsock
-    BasicUsageEnvironment
-    liveMedia
-)
-if(TARGET EpollTaskScheduler)
-    target_link_libraries(live555 INTERFACE EpollTaskScheduler)
+if(LIVE555_MONOLITH_BUILD)
+    add_library(live555 dummy.cpp)
+    target_link_libraries(live555 PUBLIC
+        UsageEnvironment
+        groupsock
+        BasicUsageEnvironment
+        liveMedia
+    )
+    if(TARGET EpollTaskScheduler)
+        target_link_libraries(live555 PUBLIC EpollTaskScheduler)
+        add_library(live555::EpollTaskScheduler ALIAS EpollTaskScheduler)
+    endif()
+    add_library(live555::live555 ALIAS live555)
+    add_library(live555::UsageEnvironment ALIAS live555)
+    add_library(live555::groupsock ALIAS live555)
+    add_library(live555::BasicUsageEnvironment ALIAS live555)
+    add_library(live555::liveMedia ALIAS live555)
+
+    live555_target_version(live555
+        CURRENT 1
+        REVISION 0
+        AGE 0
+    )
+    set_target_properties(liveMedia PROPERTIES FOLDER "live555")
+else()
+    add_library(live555 INTERFACE)
+    add_library(live555::live555 ALIAS live555)
+    target_link_libraries(live555 INTERFACE
+        UsageEnvironment
+        groupsock
+        BasicUsageEnvironment
+        liveMedia
+    )
+    if(TARGET EpollTaskScheduler)
+        target_link_libraries(live555 INTERFACE EpollTaskScheduler)
+    endif()
 endif()
 
 install(TARGETS live555 EXPORT live555Target

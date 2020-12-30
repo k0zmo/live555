@@ -9,7 +9,7 @@ set(headers
     include/TunnelEncaps.hh
     include/groupsock_version.hh
 )
-add_library(groupsock
+add_library(groupsock ${live555_library_type}
     ${headers}
     GroupEId.cpp
     Groupsock.cpp
@@ -19,7 +19,6 @@ add_library(groupsock
     NetInterface.cpp
     inet.c
 )
-add_library(live555::groupsock ALIAS groupsock)
 target_include_directories(groupsock
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -30,8 +29,12 @@ target_link_libraries(groupsock
 if(WIN32)
     target_link_libraries(groupsock PRIVATE ws2_32 mswsock)
 endif()
-live555_target_version(groupsock AUTO)
 set_target_properties(groupsock PROPERTIES FOLDER "live555/lib")
+
+if(NOT LIVE555_MONOLITH_BUILD)
+    add_library(live555::groupsock ALIAS groupsock)
+    live555_target_version(groupsock AUTO)
+endif()
 
 install(TARGETS groupsock EXPORT live555Target
     INCLUDES DESTINATION include/groupsock

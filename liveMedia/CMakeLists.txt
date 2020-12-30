@@ -162,7 +162,7 @@ set(headers
     include/ourMD5.hh
     include/uLawAudioFilter.hh
 )
-add_library(liveMedia
+add_library(liveMedia ${live555_library_type}
     ${headers}
     AC3AudioFileServerMediaSubsession.cpp
     AC3AudioRTPSink.cpp
@@ -364,7 +364,6 @@ add_library(liveMedia
     rtcp_from_spec.h
     uLawAudioFilter.cpp
 )
-add_library(live555::liveMedia ALIAS liveMedia)
 target_include_directories(liveMedia
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
@@ -376,8 +375,12 @@ target_link_libraries(liveMedia PUBLIC
 if(LIVE555_EPOLL_SUPPORT)
     target_compile_definitions(liveMedia PRIVATE READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
-live555_target_version(liveMedia AUTO)
 set_target_properties(liveMedia PROPERTIES FOLDER "live555/lib")
+
+if(NOT LIVE555_MONOLITH_BUILD)
+    add_library(live555::liveMedia ALIAS liveMedia)
+    live555_target_version(liveMedia AUTO)
+endif()
 
 install(TARGETS liveMedia EXPORT live555Target
     INCLUDES DESTINATION include/liveMedia
