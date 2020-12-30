@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 	*env << "Failed to find network address for \"" << argv[2] << "\"";
 	break;
       }
-      ReceivingInterfaceAddr = *(unsigned*)(addresses.firstAddress()->data());
+      getReceivingInterfaceAddr() = *(unsigned*)(addresses.firstAddress()->data());
       ++argv; --argc;
       break;
     }

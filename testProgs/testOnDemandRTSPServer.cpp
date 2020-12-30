@@ -272,7 +272,7 @@ int main(int argc, char** argv) {
   // A DV video stream:
   {
     // First, make sure that the RTPSinks' buffers will be large enough to handle the huge size of DV frames (as big as 288000).
-    OutPacketBuffer::maxSize = 300000;
+    OutPacketBuffer::increaseMaxSizeTo(300000);
 
     char const* streamName = "dvVideoTest";
     char const* inputFileName = "test.dv";

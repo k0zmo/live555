@@ -83,6 +83,9 @@ netAddressBits ourIPAddress(UsageEnvironment& env); // in network order
 extern netAddressBits SendingInterfaceAddr;
 extern netAddressBits ReceivingInterfaceAddr;
 
+netAddressBits& getSendingInterfaceAddr();
+netAddressBits& getReceivingInterfaceAddr();
+
 // Allocates a randomly-chosen IPv4 SSM (multicast) address:
 netAddressBits chooseRandomIPv4SSMAddress(UsageEnvironment& env);
 

@@ -28,6 +28,10 @@ if(WIN32)
         LOCALE_NOT_USED
         SOCKLEN_T=int
     )
+    if(BUILD_SHARED_LIBS)
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        set(CMAKE_DEBUG_POSTFIX d)
+    endif()
 else()
     target_compile_definitions(live555_cxx_flags INTERFACE
         BSD=1

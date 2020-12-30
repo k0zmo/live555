@@ -48,6 +48,14 @@ extern "C" int initializeWinsockIfNecessary();
 netAddressBits SendingInterfaceAddr = INADDR_ANY;
 netAddressBits ReceivingInterfaceAddr = INADDR_ANY;
 
+netAddressBits& getSendingInterfaceAddr() {
+  return SendingInterfaceAddr;
+}
+
+netAddressBits& getReceivingInterfaceAddr() {
+  return ReceivingInterfaceAddr;
+}
+
 static void socketErr(UsageEnvironment& env, char const* errorMsg) {
   env.setResultErrMsg(errorMsg);
 }

@@ -61,7 +61,7 @@ void usage() {
 int main(int argc, char** argv) {
   // Increase the maximum size of video frames that we can 'proxy' without truncation.
   // (Such frames are unreasonably large; the back-end servers should really not be sending frames this large!)
-  OutPacketBuffer::maxSize = 100000; // bytes
+  OutPacketBuffer::increaseMaxSizeTo(100000); // bytes
 
   // Begin by setting up our usage environment:
 #if defined(HAVE_EPOLL_SCHEDULER)

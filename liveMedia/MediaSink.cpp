@@ -129,6 +129,11 @@ OutPacketBuffer::~OutPacketBuffer() {
   delete[] fBuf;
 }
 
+void OutPacketBuffer::increaseMaxSizeTo(unsigned newMaxSize) {
+  if (newMaxSize > OutPacketBuffer::maxSize)
+    OutPacketBuffer::maxSize = newMaxSize;
+}
+
 void OutPacketBuffer::enqueue(unsigned char const* from, unsigned numBytes) {
   if (numBytes > totalBytesAvailable()) {
 #ifdef DEBUG
