@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.13)
 
 # Parse version number from the header file
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/liveMedia/include/liveMedia_version.hh contents)
@@ -86,7 +86,7 @@ if(LIVE555_MONOLITH_BUILD)
         REVISION 0
         AGE 0
     )
-    set_target_properties(liveMedia PROPERTIES FOLDER "live555")
+    set_target_properties(live555 PROPERTIES FOLDER "live555")
 else()
     add_library(live555 INTERFACE)
     add_library(live555::live555 ALIAS live555)

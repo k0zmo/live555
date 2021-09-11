@@ -127,6 +127,7 @@ set(headers
     include/QCELPAudioRTPSource.hh
     include/QuickTimeFileSink.hh
     include/QuickTimeGenericRTPSource.hh
+    include/RawVideoFrameParameters.hh
     include/RawVideoRTPSink.hh
     include/RawVideoRTPSource.hh
     include/RTCP.hh

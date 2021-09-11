@@ -13,16 +13,18 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 **********/
-// Copyright (c) 1996-2020, Live Networks, Inc.  All rights reserved
+// Copyright (c) 1996-2021, Live Networks, Inc.  All rights reserved
 // A test program that demonstrates how to stream - via unicast RTP
 // - various kinds of file on demand, using a built-in RTSP server.
 // main program
 
 #include "liveMedia.hh"
+
 #include "BasicUsageEnvironment.hh"
 #if defined(HAVE_EPOLL_SCHEDULER)
 #include "EpollTaskScheduler.hh"
 #endif
+#include "announceURL.hh"
 
 UsageEnvironment* env;
 
@@ -37,7 +39,7 @@ Boolean reuseFirstSource = False;
 Boolean iFramesOnly = False;
 
 static void announceStream(RTSPServer* rtspServer, ServerMediaSession* sms,
-			   char const* streamName, char const* inputFileName); // fwd
+			   char const* streamName, char const* inputFileName); // forward
 
 static char newDemuxWatchVariable;
 
@@ -424,7 +426,6 @@ int main(int argc, char** argv) {
 		       ::createNew(*env, inputAddressStr, inputPortNum, inputStreamIsRawUDP));
     rtspServer->addServerMediaSession(sms);
 
-    char* url = rtspServer->rtspURL(sms);
     *env << "\n\"" << streamName << "\" stream, from a UDP Transport Stream input source \n\t(";
     if (inputAddressStr != NULL) {
       *env << "IP multicast address " << inputAddressStr << ",";
@@ -432,8 +433,7 @@ int main(int argc, char** argv) {
       *env << "unicast;";
     }
     *env << " port " << inputPortNum << ")\n";
-    *env << "Play this stream using the URL \"" << url << "\"\n";
-    delete[] url;
+    announceURL(rtspServer, sms);
   }
 
   // Also, attempt to create a HTTP server for RTSP-over-HTTP tunneling.
@@ -453,10 +453,9 @@ int main(int argc, char** argv) {
 
 static void announceStream(RTSPServer* rtspServer, ServerMediaSession* sms,
 			   char const* streamName, char const* inputFileName) {
-  char* url = rtspServer->rtspURL(sms);
   UsageEnvironment& env = rtspServer->envir();
+
   env << "\n\"" << streamName << "\" stream, from the file \""
       << inputFileName << "\"\n";
-  env << "Play this stream using the URL \"" << url << "\"\n";
-  delete[] url;
+  announceURL(rtspServer, sms);
 }

@@ -1,3 +1,335 @@
+2021.08.24:
+- The final (I hope!) update to eliminate a "depends on uninitialised value" report from 'valgrind'.
+  Because "recvfrom()" can be expected to fill in the 'from' address only if it's called on a
+  datagram socket, we update the implementation of "RTPInterface::handleRead()" to set the
+  'from' address variable to a 'dummy' value before calling "readSocket()", in the case where
+  it's reading RTP/RTCP-over-TCP.
+2021.08.23:
+- Updated the "readSocket()" code in "GroupsockHelper.cpp" yet again to try to eliminate
+  another (alleged) "depends on uninitialised value" report from 'valgrind'.
+2021.08.19:
+- Updated the "readSocket()" code in "GroupsockHelper.cpp" to eliminate another possible
+  "depends on uninitialised value" report from 'valgrind'.  (Thanks to Dmitry Kostromin)
+2021.08.18:
+- Updated the "readSocket()" code in "GroupsockHelper.cpp" to eliminate a
+  "depends on uninitialised value" report from 'valgrind'.  (Thanks to Dmitry Kostromin)
+2021.08.17:
+- Updated the 'groupsock' "setPortNum()" function to not rely upon the "ss_family" family
+  field, in case it's uninitialized.
+2021.08.14:
+- Fixed a minor bug in the previous release ("delete" should have been "delete[]")
+2021.08.13:
+- Fixed a bug in "MPEG1or2Demux" that could cause a 'reading twice at the same time" abort
+  when streaming from a MPEG Program Stream file.  (Thanks to Ba Jinsheng for reporting this.)
+- Fixed a potential memory leak in "AC3AudioStreamFramer".  (Thanks to Ba Jinsheng for reporting this.)
+2021.08.09:
+- Fixed a bug in the MPEG-1 or 2 file server demultiplexors that could cause a RTSP server
+  to crash if it received successive RTSP "SETUP" commands for the same track.
+  (Thanks to Ba Jinsheng for reporting this.)
+2021.08.06:
+- Fixed a bug in the Matroska and Ogg file server demultiplexors that could cause a RTSP server
+  to crash if it received successive RTSP "SETUP" commands for the same track.
+  (Thanks to Ba Jinsheng for reporting this.)
+2021.08.04:
+- In the "MP3FileSource" implementation, we no longer do a recursive call to "doEventLoop()"
+  when attempting to synchronously read from a MP3 file.  This avoids a possible
+  stack overflow in the RTSP server if multiple concurrent requests are made.
+  (Thanks to Ba Jinsheng for reporting this.)  The server still does some synchronous reads,
+  when initializing, and when parsing MP3 frame headers.  This should be fixed sometime in the
+  future.
+2021.07.20:
+- If a "RTSPClient" receives a response to a RTSP "PLAY" that changes the 'scale()' or 'speed()'
+  of the whole session, then those parameters also need to be changed in each subsession
+  (as that inheritance doesn't happen automatically).
+  (Thanks to a developer in China for reporting this.)
+2021.07.10:
+- Updated "H264or5VideoStreamFramer.cpp" once again to set the default value of
+  "DeltaTfiDivisor" to 2.0 for H.265, and 1.0 for everything else.  (This fixes the frame rate
+  for another stream supplied by Paul Westlund.)
+2021.06.29:
+- In the proxy server implementation, if a client closes one substream, but there are still
+  other clients receiving other substream(s), then we no send a single-track RTSP "PAUSE"
+  command downstream, because some back-end servers might handle that by pausing all tracks
+  of the stream.  So now, in this case, we don't send a RTSP "PAUSE" command at all.
+  (Thanks to Jose Maria Infanzon for noting this issue.)
+2021.06.25:
+- Updated "H264or5VideoStreamFramer.cpp" to set the default value of "DeltaTfiDivisor" to
+  1.0 (rather than 2.0), and to assume a frame rate of 30 fps (rather than 25 fps) if there
+  is no VPS or SPS NAL unit that specifies a different frame rate.  This seems to work the best
+  for most raw H.264 and H.265 video streams.  (Thanks to Paul Westlund for supplying an
+  example file to motivate this.)
+2021.05.22:
+- Fixed a bug that might cause a "REGISTER" or "DEREGISTER" command to be handled after
+  the corresponding "RTSPClientConnection" object is deleted.
+  (Thanks to Mario Takeuchi for reporting this bug and providing a patch.)
+2021.05.17:
+- If a stream has no known duration, then our "a=range:" line (in the server's SDP description)
+  now says "npt=now-" rather than "npt=0-".  Although the latter appears to be valid
+  (according to RFC 2326), it has been claimed that "ffmpeg" RTSP clients do not handle it.
+  (Thanks to Dmitry Bely for raising this issue.)
+2021.05.03:
+- Updated the code for "getOurIPAddresses()" to check that "p->ifa_addr" is not NULL before
+  we try dereferencing it.  (Thanks to Thore Mehr for noting this.)
+2021.04.06:
+- Fixed a bad #define in "liveMedia/include/MPEG2TransportStreamAccumulator.hh"
+2021.04.05:
+- Updated "groupsock/GroupsockHelper.cpp" to cast the 4th argument of various calls to
+  "setsockopt()" to "(const char *)" to make MSVC happy.
+  (Thanks to Josh Thorson for suggesting this.)
+2021.03.22:
+- Updated the "BasicUDPSource" class to reimplement the "maxFrameSize()" virtual function.
+  This will make "StreamSource" subclasses work properly when fed from "BasicUDPSource"s,
+  by telling the "StreamSource" to read as much data as possible from each incoming datagram.
+  (Thanks to Josh Thorson for discovering this.)
+2021.03.17:
+- Removed extraneous code from "MPEG2TransportStreamAccumulator.hh".  (Also, include that
+  header file in "liveMedia.hh".)
+2021.03.16:
+- Fixed a bug in the implementation of "OnDemandServerMediaSubsession" that could cause a
+  RTSP server to crash - for certain "OnDemandServerMediaSubsession" subclasses - if it is
+  accessed by a malicious RTSP client.  If you have a RTSP server that uses one or more of
+  the following "OnDemandServerMediaSubsession" subclasses:
+      AC3AudioFileServerMediaSubsession
+      ADTSAudioFileServerMediaSubsession
+      AMRAudioFileServerMediaSubsession
+  then you should upgrade to this version of the code ASAP, as this is a potential security
+  vulnerability.  (Note, however, that the "DynamicRTSPServer" code used by the
+  "LIVE555 Media Server" is not vulnerable to this bug.)
+  (Thanks to Zhao Jiaxu for reporting this bug.)
+2021.03.15:
+- Updated the various RTSP server applications in "testProgs" to use a common routine
+  "announceURL()" (implemented in "announceURL.cpp") to display the IPv4 and/or IPv6 "rtsp://"
+  URLs of the stream.
+- Updated the "testMP3Streamer", "testMP3Receiver", "testMPEG1or2AudioVideoStreamer",
+  "testMPEG1or2VideoStreamer", and "testMPEG2TransportStreamer" demo applications to
+  (optionally) stream using IPv6 multicast instead of IPv4 multicast.
+  (To enable this, uncomment the line that #defines USE_IPV6_MULTICAST)
+- Removed from the "live555 Media Server" code the line that outputs a comment about
+  supportng HTTP Live Streaming (on indexed Transport Stream files).
+  This is no longer supported.
+2021.02.11:
+- Updated the "live555 Media Server" and "testOnDemandRTSPServer" applications to display both
+  IPv4 and IPv6 RTSP URLs when starting (or just an IPv4 RTSP URL if the system is IPv4-only,
+  or just an IPv6 RTSP URL if the system is IPv6-only).
+2021.02.10:
+- Fixed a bug in "GenericMediaServer" that could potentially cause infinite recursion in the
+  "live555 Media Server" application.  (This had earlier been fixed in version 2019.09.30,
+  but had accidentally been reintroduced into a recent revision.)
+- Before binding to IPv6 sockets, set the IPV6_V6ONLY flag set to 1, so that we can have
+  an IPv4 socket and an IPv6 socket bound to the same port.
+2021.02.09:
+- Fixed a bug in "groupsock/GroupsockHelper.cpp" that could cause a compilation error on
+  some systems where "sa_len" is not defined in "struct sockaddr".
+2021.02.05:
+- Updated the mechanism by which we figure out our (IPv4 and/or IPv6) address.
+  Instead of the 'multicast loopback' mechanism, we use "getifaddrs()".
+  (If "getifaddrs()" doesn't work, then we fall back to the
+  "lookup host name"->"resolve host name" method, as we did before.)
+  If "getifaddrs()" is not defined on your system (or if you don't want to use it), then
+  you can disable its use by compiling with NO_GETIFADDRS defined.
+- Updated "RTSPServer::rtspURL()" (and "RTSPServer::rtspURLPrefix()") to take an optional
+  parameter "useIPv6" (default value: False).  If True, the returned "rtsp://" URL (or prefix)
+  uses our IPv6 address, rather than our IPv4 address.
+  (We also defined shortcut functions "ipv4rtspURL(Prefix)()" and "ipv6rtspURL(Prefix)()"
+   that call the above functions.)
+- Fixed a bug in the 'groupsock' "addressIsNull()" function for IPv6 addresses.
+2021.01.29:
+- Renamed the 'groupsock' function "ourIPAddress()" to "ourIPv4Address()".
+  (We also define a function "ourIPv6Address()", though for now this just returns a null
+   IPv6 address.)
+2021.01.28:
+- Fixed the "config.macosx-no-openssl" configuration file (it had been accidentally trying to
+  link with SSL and crypto libraries).
+2021.01.21:
+- Updated the "GenericMediaServer" class (and its subclasses, including "RTSPServer" and
+  "DynamicRTSPServer") to use two main server sockets: one for handling connections over IPv4;
+  the other for handling connections over IPv6.  (Connections over IPv6 might not be fully
+  working yet.)
+- Changed the "groupsock" "getSourcePort()" function to take an extra "domain"
+  (AF_INET or AF_INET6) parameter.  (This is needed in case the function's implementation
+  needs to call "bind()".)
+2021.01.20:
+- Updated the implementations of several helper functions in "groupsock/GroupsockHelper.cpp"
+  to work with IPv6 (once we support it).
+2021.01.18:
+- Changed the virtual function "ServerMediaSession::sdpLines()" to take an 'address family'
+  parameter.  This lets us ensure (in "OnDemandServerMediaSubsession") that generated SDP
+  descriptions for unicast streams have the correct IP address family string ("IP4" or "IP6").
+- Changed the "GenericMediaServer::setUpOurSocket()" function to take a 'domain'
+  (AF_INET or AF_INET6) parameter, in preparation for eventual support for IPv6.
+2021.01.17:
+- In the "groupsock" library, changed the signature of "nullAddress()" to take an optional 'address family' parameter.
+- Removed obsolete parameters "fServerAddressForSDP" and "fPortNumForSDP" (and member function "setServerAddressAndPortForSDP()") from "ServerMediaSubsession".
+2021.01.16:
+- Fixed minor bug in "RawVideoRTPSource".  (Thanks to Yahia Benmoussa.)
+2021.01.14:
+- Changed the virtual function "GenericMediaServer::lookupServerMediaSession()" to be
+  asynchronous, to allow the actual lookup to be performed within the event loop, in response
+  to an event.  "lookupServerMediaSession()" now takes a 'completion function' and
+  'completion client data' as parameter.  Once the lookup is done, the completion function
+  is called - with the 'completion client data' and looked-up "ServerMediaSession" object
+  as parameter.
+  (Thanks to Mit Shan for providing the use case that motivated this change.)
+2021.01.13:
+- Fixed a memory leak in the "MIKEYPayload" class.  (Thanks to Micha Kalfon for reporting this.)
+2021.01.09:
+- Updated the constructor for the 'groupsock' "NetAddressList" class to take an (optional)
+  'address family' parameter.  This can be used to lookup specifically an IPv4 or IPv6 address
+  for a given host name.  (In 'liveMedia', updated "MediaSession.cpp" to use this mechanism
+  when parsing a SDP description.)
+- Updated the "ServerMediaSession::generateSDPDescription()" function to take an
+  'address family' parameter, so we can generate proper SDP (specifying the proper IP address
+  family) even for connections from IPv6 clients.  Updated the
+  "RTSPServer::RTSPClientConnection" constructor accordingly, to record the address family
+  of the connection, for subsequent use when calling "generateSDPDescription()".
+2021.01.01:
+- Updated the 'groupsock' "setupDatagramSocket()" and "setupStreamSocket()" to take
+  an 'address family' parameter, in preparation for eventual support for IPv6.
+2020.12.23:
+- Updated the implementation of "NetAddressList()" to properly return an IPv6 address
+  if the hostname being looked up is IPv6 only.  (This is in preparation for eventual
+  support for IUPv6.)
+- More minor changes to the "groupsock" library in preparation for eventual support for IPv6.
+  Note that the type name "netAddressBits" is no longer defined; use "ipv4AddressBits" instead.
+2020.12.13:
+- Fixed a bug accidentally introduced in the previous release (Linux distributions don't
+  include the field "ss_len" in their definition of "struct sockaddr_storage").
+  (Thanks to Scott Robinson for reporting this.)
+2020.12.12:
+- Updated the "groupsock" "socketJoin/LeaveGroup()" functions to take
+  "struct sockaddr_storage const&" as parameter, in preparation for eventual support for IPv6.
+2020.12.11:
+- Updated the "MediaSession" "fSourceFilterAddr" field and "connectionEndpointAddress()"
+  and "setDestinations()" member functions to use a "struct sockaddr_storage",
+  in preparation for eventual support for IPv6.
+- More cleanup of the "groupsock" library.
+2020.12.10:
+- Updated the "Groupsock" constructors to take "struct sockaddr_storage const&"s as
+  parameter, in preparation for eventual support for IPv6.
+  (Ditto for the "createGroupsock()" virtual in "OnDemandServerMediaSubsession"
+   and its subclasses.)
+- Updated "Groupsock::groupAddress()" and "Groupsock::sourceFilterAddress()" to return
+  a "struct sockaddr_storage&", in preparation for eventual support for IPv6.  
+2020.12.09:
+- Cleaned up the "groupsock" library by removing a lot of code that was used only for the
+  old "UDP multicast tunneling" mechanism (which would not work for IPv6 addresses anyway).
+- Fixed a bug (accidentally introduced in the previous release) that could cause clients'
+  RTCP "RR" packets to not get sent properly.
+2020.12.08:
+- Updated the "Groupsock::addDestination()" and "Groupsock::changeDestinationParameters()"
+  functions to take a "struct sockaddr_storage" as parameter, in preparation for
+  eventual support for IPv6.
+2020.12.07:
+- Updated the interface to the 'groupsock' "GroupEId" class to use "struct sockaddr_storage",
+  in preparation for eventual support for IPv6.
+2020.12.06:
+- Allow for parsing (and generating) "IP IP6" in SDP descriptions,
+  for when we later support IPv6.
+2020.12.05:
+- Changed "fServerAddress" in "RTSPClient" and "SIPClient" to use a "struct sockaddr_storage",
+  in preparation for eventual support for IPv6.
+- Performed the annual update of the copyright years near the start of each file
+2020.12.04:
+- Updated "RTCPInstance::(un)setSpecificRRHandler()" to take "struct sockaddr_storage"
+  as parameter, in more preparation for eventual support for IPv6.
+2020.12.03:
+- Updated "AddressPortLookupTable"s member functions to take "struct sockaddr_storage"
+  as parameter, in more preparation for eventual support for IPv6.
+2020.12.02:
+- Updated the "ServerMediaSubsession" "getStreamParameters()" virtual function to
+  take "struct sockadd_storage" as parameters, in preparation for eventual support for IPv6.
+2020.12.01:
+- More cleanup of the "groupsock" and "liveMedia" libraries,
+  in more preparation for eventual support for IPv6.
+2020.11.30:
+- Updated "RTSPServer.cpp" again to replace another "sockaddr_in" with "sockaddr_storage",
+  in more preparation for eventual support for IPv6.
+2020.11.29:
+- Updated the 'groupsock' "GroupEId" implementation (but not yet the interface) to
+  use "sockaddr_storage", in preparation for eventual support for IPv6.
+2020.11.28:
+- Updated the packet output routines in the "groupsock" library to use "sockaddr_storage",
+  in preparation for eventual support for IPv6
+2020.11.27:
+- Fixed some non-portable code (not buildable on some Linux versions) in
+  "groupsock/GroupsockHelper.cpp" that was accidentally introduced in version 2020.11.25.
+  (Thanks to Olivier Binda for reporting this.)
+2020.11.26:
+- We now use a "struct sockaddr_storage" rather than a "struct sockaddr_in" for the
+  'client address' field in the ("GenericMediaServer" and "RTSPServer") "ClientSession" class.
+2020.11.25:
+- Updated readSocket(), Groupsock::handleRead(), and RTPInterface::handleRead()
+  (and related functions) to take/return a "sockaddr_storage" (rather than a "sockaddr_in"),
+  to prepare for eventual support for IPv6.
+- Added some basic logging code (from Jim Ham) to "RTSPServer.cpp".
+  This code is #ifdef'd out by default.  To enable it, define LOG_RTSPSERVER_ACCESS
+2020.11.22:
+- Updated the 'groupsock' "AddressString" class to use the standard "inet_ntop()" function
+  (and also to work for IPv6 addresses once we support them).
+- Updated the "RTSPServer::rtspURLPrefix()" (and thus "RTSPServer::rtspURL()") functions to
+  enclose the IP address literal in square brackets [] if the address is IPv6 (which it
+  currently won't be, because we don't yet support IPv6.)
+2020.11.21:
+- Removed the use of "our_inet_addr()" (and "inet_addr()") functions, and replaced them with
+  calls to (the more up-to-date) "inet_pton()" function.
+- Updated the "parseRTSPURL()" function to recognize IP address literals (in "rtsp://" URLs)
+  that are enclosed in square brackets [].  (This is how IPv6 address literals are included in
+  URLs, although we don't yet support IPv6.)
+2020.11.20:
+- Renamed the existing 'macosx' config file to 'config.macosx-catalina', and created a new
+  config file 'config.macosx-bigsur' that will work with Apple's new OS "MacOS Big Sur".
+2020.11.19:
+- In "liveMedia/TLSState.cpp", changed the call to "TLS_client_method()" back to
+  "SSLv23_client_method()", because "TLS_client_method()" isn't defined for SSH
+  in some systems (e.g., Mac OS)
+2020.11.05:
+- Changed the HTTP version used in our RTSP-over-HTTP implementation (for both clients and
+  servers) from HTTP/1.1 back to HTTP/1.0.
+  (This was a suggest from David Yang, who noted that HTTP/1.1 would require that we
+   implement "chunked" transfer-coding.)
+2020.11.03:
+- Updated the "LIVE555 HLS Proxy" application to output the liveMedia version number
+  when starting.
+- Added the LGPLv3 header to some files (where it had accidentally been omitted before).
+  (Thanks to Sebastian Ramacher for noting this.)
+2020.10.16:
+- Changed "TLSState::read()" to treat any "SSL_read()" result of <=0 as if the
+  TLS connection has closed (unless the error was SSL_ERROR_WANT_READ).
+  This fixes a problem that could cause 100% CPU usage in RTSP client applications.
+  (Thanks to Larry Wu and Navinar Kochupandarakalatil from Intel for reporting this.)
+- Updated "TLSState::setup()" to use "TLS_client_method()" instead of the (deprecated)
+  "SSLv23_client_method()".
+2020.08.19:
+- Fixed a bug in "QuickTimeFileSink" that could cause malformed "esds" atoms to be
+  generated.  (Thanks to Chris Paucar for reporting this issue.)
+2020.08.18:
+- In "MPEG2TransportStreamFromESSource.cpp", changed the name of the constant LOW_WATER_MARK
+  to TS_FROM_ES_LOW_WATER_MARK, and "#ifndef"d it, so that, if you wish, you can redefine it
+  at compile time.
+2020.08.12:
+- Fixed a bug in the handling of pausing, when streaming from (multi-track) Matroska files.
+2020.08.11:
+- Fixed another bug in the handling of seeking within Matroska files.
+2020.08.10:
+- Fixed a bug in the handling of seeking within Matroska files.
+  (Thanks to Jim Ham for reporting this problem.)
+2020.08.09:
+- Changed the parameter signature of the "RawVideoRTPSink" constructor and "createNew()"
+  functions so that the "width" parameter comes before the "height" parameter.  This order
+  - "width", "height" - is more common, and is the order used when these parameters are
+  defined in RFC 4175.
+  IMPORTANT NOTE: Because the types of these two parameters are the same, existing application
+  code that uses "RawVideoRTPSink" will compile without error; however, it will not work
+  properly unless the order of the parameters in the call to "RawVideoRTPSink::createNew()"
+  is changed.
+2020.08.05:
+- More cleanup of the implementation of "RawVideoRTPSink".
+2020.07.31:
+- Cleaned up the implementation of "RawVideoRTPSink".
+2020.07.21:
+- Updated the "RawVideoRTPSource" implementation to not set "fCurrentPacketCompletesFrame"
+  until we are processing the last line in the packet.
+  (Thanks to Andrey Lisovoy for reporting this issue.)
 2020.07.09:
 - Fixed a potential buffer overflow bug in the server handling of a RTSP "PLAY" command,
   when the command specifies seeking by absolute time.

@@ -6,7 +6,6 @@ set(headers
     include/NetAddress.hh
     include/NetCommon.h
     include/NetInterface.hh
-    include/TunnelEncaps.hh
     include/groupsock_version.hh
 )
 add_library(groupsock ${live555_library_type}
@@ -28,6 +27,7 @@ target_link_libraries(groupsock
 )
 if(WIN32)
     target_link_libraries(groupsock PRIVATE ws2_32 mswsock)
+    target_compile_definitions(groupsock PRIVATE NO_GETIFADDRS)
 endif()
 set_target_properties(groupsock PROPERTIES FOLDER "live555/lib")
 
