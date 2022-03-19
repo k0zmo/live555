@@ -21,6 +21,7 @@ option(LIVE555_EPOLL_SUPPORT "Enable epoll task scheduler (Windows also)" ON)
 option(LIVE555_BUILD_EXAMPLES "Build examples and test programs" ${live555_master_project})
 option(LIVE555_ENABLE_OPENSSL "Build with OpenSSL support (rtsps, SRTP)." ON)
 option(LIVE555_MONOLITH_BUILD "Build all modules as one monolithic library" OFF)
+option(LIVE555_DEBUG_OUTPUT "Enable debug output" OFF)
 
 add_library(live555_cxx_flags INTERFACE)
 if(WIN32)

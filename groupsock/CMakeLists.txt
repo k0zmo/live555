@@ -25,6 +25,9 @@ target_link_libraries(groupsock
     PRIVATE live555_cxx_flags
     PUBLIC  UsageEnvironment
 )
+if(LIVE555_DEBUG_OUTPUT)
+    target_compile_definitions(groupsock PRIVATE DEBUG)
+endif()
 if(WIN32)
     target_link_libraries(groupsock PRIVATE ws2_32 mswsock)
     target_compile_definitions(groupsock PRIVATE NO_GETIFADDRS)

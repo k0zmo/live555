@@ -376,6 +376,9 @@ target_link_libraries(liveMedia PUBLIC
 if(LIVE555_EPOLL_SUPPORT)
     target_compile_definitions(liveMedia PRIVATE READ_FROM_FILES_SYNCHRONOUSLY)
 endif()
+if(LIVE555_DEBUG_OUTPUT)
+    target_compile_definitions(liveMedia PRIVATE DEBUG)
+endif()
 set_target_properties(liveMedia PROPERTIES FOLDER "live555/lib")
 
 if(NOT LIVE555_MONOLITH_BUILD)

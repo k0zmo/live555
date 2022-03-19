@@ -22,6 +22,9 @@ target_link_libraries(BasicUsageEnvironment PUBLIC
     live555_cxx_flags
     UsageEnvironment
 )
+if(LIVE555_DEBUG_OUTPUT)
+    target_compile_definitions(BasicUsageEnvironment PRIVATE DEBUG)
+endif()
 set_target_properties(BasicUsageEnvironment PROPERTIES FOLDER "live555/lib")
 
 if(NOT LIVE555_MONOLITH_BUILD)
